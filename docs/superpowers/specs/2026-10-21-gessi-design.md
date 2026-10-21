@@ -74,3 +74,13 @@ Un celular por servicio, compartido por los guardias del turno. La app funciona 
 - Banco con el que paga y ejemplo de comprobante.
 - Lista de servicios (clientes) con dirección y guardias asignados.
 - Acceso DNS si se quiere subdominio propio.
+
+## Notas de implementación (2026-10-21)
+
+- **Corte de caja** de Gioval no se portó: es para cobro diario en mostrador; GESSI cobra mensualidades por transferencia. Se reemplaza con Cuentas por cobrar.
+- **Rondín sin PIN:** el guardia elige su nombre entre los que tienen jornada abierta en esa caseta (ya se identificó con PIN + selfie al entrar).
+- **SOS** no pide identificarse (velocidad); si hay un solo guardia en turno se le atribuye.
+- **Push a supervisores** (rondines ATA) no se portó: el panel muestra un aviso global de SOS y alertas cada 30 s.
+- **Costo de guardias** en Ganancia por servicio = turnos × salario diario × 2 (12x36), sin IMSS ni prestaciones.
+- **Hoja NOMIPAQ**: columnas genéricas (Código, Nombre, Días trabajados, Faltas, Horas) hasta tener la plantilla de importación de Claudio.
+- **HTTP sin cifrar** (IP:8101) mientras no haya dominio; la app permite cleartext. Cambiar a HTTPS y recompilar cuando exista `app.solucionesenseguridad.com.mx` o `gessi.havocdev.mx`.
