@@ -28,17 +28,17 @@ import { rondines } from './api/operacion';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Personal vive en la raíz para no tocar las rutas heredadas de RHATA
+// Personal conserva las rutas heredadas de RHATA (/empleados, /pagos…); la raíz es el escritorio
 const PANELES = [
-  { id: 'personal', label: 'Personal', to: '/', links: [
-    { to: '/', label: 'Empleados', end: true },
+  { id: 'personal', label: 'Personal', to: '/personal', desc: 'Expedientes, asistencia, pre-nómina y formatos', links: [
+    { to: '/personal', label: 'Empleados', end: true },
     { to: '/asistencia', label: 'Asistencia' },
     { to: '/prenomina', label: 'Pre-nómina' },
     { to: '/pagos', label: 'Pagos' },
     { to: '/formatos', label: 'Formatos' },
     { to: '/cultura', label: 'Cultura' },
   ] },
-  { id: 'rondines', label: 'Rondines', to: '/rondines', links: [
+  { id: 'rondines', label: 'Rondines', to: '/rondines', desc: 'Mapa en vivo, alertas, puntos QR y clientes', lateral: true, links: [
     { to: '/rondines', label: 'Dashboard', end: true },
     { to: '/rondines/mapa', label: 'Mapa en vivo' },
     { to: '/rondines/alertas', label: 'Alertas' },
@@ -47,7 +47,7 @@ const PANELES = [
     { to: '/rondines/clientes', label: 'Clientes' },
     { to: '/rondines/guardias', label: 'Guardias' },
   ] },
-  { id: 'finanzas', label: 'Finanzas', to: '/finanzas', soloAdmin: true, links: [
+  { id: 'finanzas', label: 'Finanzas', to: '/finanzas', desc: 'Ingresos, egresos, cobranza y ganancia por servicio', soloAdmin: true, links: [
     { to: '/finanzas', label: 'Dashboard', end: true },
     { to: '/finanzas/resultados', label: 'Estado de resultados' },
     { to: '/finanzas/movimientos', label: 'Movimientos' },
@@ -63,8 +63,36 @@ function rolActual() {
 }
 
 function panelActual(pathname) {
-  return PANELES.find(p => p.to !== '/' && pathname.startsWith(p.to)) || PANELES[0];
+  if (pathname === '/') return null;
+  return PANELES.find(p => p.id !== 'personal' && pathname.startsWith(p.to)) || PANELES[0];
 }
+
+const panelesVisibles = () => PANELES.filter(p => !p.soloAdmin || rolActual() === 'admin');
+
+function Escritorio() {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-[70vh] flex flex-col items-center justify-center py-8">
+      <img src={logoGessi} alt="G.E.S.S.I. Seguridad Privada" className="h-24 object-contain mb-4 bg-black rounded-2xl p-3" />
+      <p className="text-sm text-gray-500 mb-10">Selecciona un módulo para continuar</p>
+      <div className="grid gap-5 w-full max-w-4xl grid-cols-1 sm:grid-cols-3">
+        {panelesVisibles().map(p => (
+          <button key={p.id} onClick={() => navigate(p.to)}
+            className="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:border-black active:scale-95">
+            <div className="w-14 h-14 rounded-2xl mx-auto mb-4 bg-black text-white flex items-center justify-center text-2xl font-bold">
+              {p.label[0]}
+            </div>
+            <h2 className="text-lg font-bold uppercase tracking-widest mb-2">{p.label}</h2>
+            <p className="text-xs text-gray-500 leading-relaxed">{p.desc}</p>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const ladoLink = ({ isActive }) =>
+  `block px-4 py-2 rounded-md text-sm ${isActive ? 'bg-black text-white font-semibold' : 'text-gray-600 hover:bg-gray-100 hover:text-black'}`;
 
 const subLink = ({ isActive }) =>
   isActive ? 'text-black font-semibold text-sm border-b-2 border-black pb-2'
@@ -96,12 +124,14 @@ function Layout() {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-black text-white">
         <div className="px-6 flex items-center gap-6 h-16">
-          <img src={logoGessi} alt="G.E.S.S.I. Seguridad Privada" className="h-12 object-contain" />
+          <button onClick={() => navigate('/')} title="Escritorio">
+            <img src={logoGessi} alt="G.E.S.S.I. Seguridad Privada" className="h-12 object-contain" />
+          </button>
           <nav className="flex gap-1 flex-1">
-            {PANELES.filter(p => !p.soloAdmin || rolActual() === 'admin').map(p => (
+            {panelesVisibles().map(p => (
               <button key={p.id} onClick={() => navigate(p.to)}
                 className={`px-4 py-2 rounded-md text-sm font-semibold uppercase tracking-widest ${
-                  panel.id === p.id ? 'bg-white text-black' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>
+                  panel?.id === p.id ? 'bg-white text-black' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>
                 {p.label}
               </button>
             ))}
@@ -118,14 +148,22 @@ function Layout() {
           ⚠ {sos} alerta{sos > 1 ? 's' : ''} SOS sin atender — ver alertas
         </button>
       )}
-      {panel.links.length > 0 && (
+      {panel && !panel.lateral && (
         <nav className="bg-white border-b border-gray-200 px-6 pt-3 flex gap-6 overflow-x-auto whitespace-nowrap">
           {panel.links.map(l => <NavLink key={l.to} to={l.to} end={l.end} className={subLink}>{l.label}</NavLink>)}
         </nav>
       )}
-      <main className="max-w-6xl mx-auto p-6">
+      <div className="flex flex-col md:flex-row">
+      {panel?.lateral && (
+        <aside className="md:w-56 md:min-h-[calc(100vh-4rem)] bg-white border-b md:border-b-0 md:border-r border-gray-200 p-3 flex md:flex-col gap-1 overflow-x-auto whitespace-nowrap">
+          <p className="hidden md:block px-4 pt-2 pb-3 text-xs font-bold uppercase tracking-widest text-gray-400">{panel.label}</p>
+          {panel.links.map(l => <NavLink key={l.to} to={l.to} end={l.end} className={ladoLink}>{l.label}</NavLink>)}
+        </aside>
+      )}
+      <main className="flex-1 min-w-0 max-w-6xl mx-auto p-6">
         <Routes>
-          <Route path="/" element={<EmpleadosPage />} />
+          <Route path="/" element={<Escritorio />} />
+          <Route path="/personal" element={<EmpleadosPage />} />
           <Route path="/empleados/nuevo" element={<EmpleadoFormPage />} />
           <Route path="/empleados/:id" element={<EmpleadoDetallePage />} />
           <Route path="/empleados/:id/editar" element={<EmpleadoFormPage />} />
@@ -152,6 +190,7 @@ function Layout() {
           <Route path="/finanzas/categorias" element={<CategoriasPage />} />
         </Routes>
       </main>
+      </div>
     </div>
   );
 }

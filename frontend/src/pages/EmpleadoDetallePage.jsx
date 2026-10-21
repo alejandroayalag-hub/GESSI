@@ -94,7 +94,7 @@ export default function EmpleadoDetallePage() {
   const handleEliminar = async () => {
     if (!confirm('¿Eliminar este empleado?')) return;
     await deleteEmpleado(id);
-    navigate('/');
+    navigate('/personal');
   };
 
   const handleUpload = async (tipoId, file) => {
@@ -348,7 +348,7 @@ export default function EmpleadoDetallePage() {
         </div>
       )}
 
-      <Link to="/" className="text-sm text-gray-500 hover:underline">← Volver a empleados</Link>
+      <Link to="/personal" className="text-sm text-gray-500 hover:underline">← Volver a empleados</Link>
 
       {showBajaModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
