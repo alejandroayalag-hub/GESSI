@@ -98,5 +98,3 @@ body {
   #qr-imprimir { position: fixed; inset: 0; justify-content: center; }
 }
 
-/* Mapa en blanco y negro, acorde a la marca */
-.mapa-gessi .leaflet-tile-pane { filter: grayscale(1) contrast(1.05); }
