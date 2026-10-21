@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+/* ponytail: marca GESSI blanco y negro — las clases blue-* heredadas de RHATA se pintan en escala de negros */
+@theme {
+  --color-blue-50: #f5f5f5;
+  --color-blue-100: #e5e5e5;
+  --color-blue-200: #d4d4d4;
+  --color-blue-300: #a3a3a3;
+  --color-blue-500: #404040;
+  --color-blue-600: #171717;
+  --color-blue-700: #000000;
+  --color-blue-800: #262626;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+}
