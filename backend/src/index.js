@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 
 const errorHandler = require('./middleware/errorHandler');
 const authMiddleware = require('./middleware/auth');
+const requireRole = require('./middleware/requireRole');
 const runMigrations = require('./db/migrate');
 const { iniciarVigilancia } = require('./lib/vigilancia');
 
@@ -43,6 +44,7 @@ app.use('/api/servicios', authMiddleware, require('./routes/servicios'));
 app.use('/api/guardias',  authMiddleware, require('./routes/guardias'));
 app.use('/api/rondines',  authMiddleware, require('./routes/rondines'));
 app.use('/api/jornadas',  authMiddleware, require('./routes/jornadas'));
+app.use('/api/finanzas',  authMiddleware, requireRole('admin'), require('./routes/finanzas'));
 
 // Celular de caseta: su propio token de dispositivo (ver routes/caseta.js)
 app.use('/api/caseta', require('./routes/caseta'));

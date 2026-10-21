@@ -18,6 +18,12 @@ import BitacoraPage from './pages/rondines/BitacoraPage';
 import PuntosPage from './pages/rondines/PuntosPage';
 import ServiciosPage from './pages/rondines/ServiciosPage';
 import GuardiasPage from './pages/rondines/GuardiasPage';
+import DashboardFinanzas from './pages/finanzas/DashboardFinanzas';
+import EstadoResultados from './pages/finanzas/EstadoResultados';
+import MovimientosPage from './pages/finanzas/MovimientosPage';
+import CuentasPage from './pages/finanzas/CuentasPage';
+import GananciaPage from './pages/finanzas/GananciaPage';
+import CategoriasPage from './pages/finanzas/CategoriasPage';
 import { rondines } from './api/operacion';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -41,8 +47,20 @@ const PANELES = [
     { to: '/rondines/clientes', label: 'Clientes' },
     { to: '/rondines/guardias', label: 'Guardias' },
   ] },
-  { id: 'finanzas', label: 'Finanzas', to: '/finanzas', links: [] },
+  { id: 'finanzas', label: 'Finanzas', to: '/finanzas', soloAdmin: true, links: [
+    { to: '/finanzas', label: 'Dashboard', end: true },
+    { to: '/finanzas/resultados', label: 'Estado de resultados' },
+    { to: '/finanzas/movimientos', label: 'Movimientos' },
+    { to: '/finanzas/cobrar', label: 'Cuentas por cobrar' },
+    { to: '/finanzas/pagar', label: 'Cuentas por pagar' },
+    { to: '/finanzas/ganancia', label: 'Ganancia por servicio' },
+    { to: '/finanzas/categorias', label: 'Categorías' },
+  ] },
 ];
+
+function rolActual() {
+  try { return JSON.parse(atob(localStorage.getItem('token').split('.')[1])).role; } catch { return null; }
+}
 
 function panelActual(pathname) {
   return PANELES.find(p => p.to !== '/' && pathname.startsWith(p.to)) || PANELES[0];
@@ -52,14 +70,6 @@ const subLink = ({ isActive }) =>
   isActive ? 'text-black font-semibold text-sm border-b-2 border-black pb-2'
            : 'text-gray-500 hover:text-black text-sm pb-2 border-b-2 border-transparent';
 
-function Proximamente({ titulo }) {
-  return (
-    <div className="bg-white border border-gray-200 rounded-xl p-10 text-center">
-      <h1 className="text-2xl font-semibold text-black mb-2">{titulo}</h1>
-      <p className="text-gray-500 text-sm">Módulo en construcción.</p>
-    </div>
-  );
-}
 
 function Layout() {
   const navigate = useNavigate();
@@ -88,7 +98,7 @@ function Layout() {
         <div className="px-6 flex items-center gap-6 h-16">
           <img src={logoGessi} alt="G.E.S.S.I. Seguridad Privada" className="h-12 object-contain" />
           <nav className="flex gap-1 flex-1">
-            {PANELES.map(p => (
+            {PANELES.filter(p => !p.soloAdmin || rolActual() === 'admin').map(p => (
               <button key={p.id} onClick={() => navigate(p.to)}
                 className={`px-4 py-2 rounded-md text-sm font-semibold uppercase tracking-widest ${
                   panel.id === p.id ? 'bg-white text-black' : 'text-gray-300 hover:text-white hover:bg-white/10'}`}>
@@ -133,7 +143,13 @@ function Layout() {
           <Route path="/rondines/puntos" element={<PuntosPage />} />
           <Route path="/rondines/clientes" element={<ServiciosPage />} />
           <Route path="/rondines/guardias" element={<GuardiasPage />} />
-          <Route path="/finanzas/*" element={<Proximamente titulo="Finanzas" />} />
+          <Route path="/finanzas" element={<DashboardFinanzas />} />
+          <Route path="/finanzas/resultados" element={<EstadoResultados />} />
+          <Route path="/finanzas/movimientos" element={<MovimientosPage />} />
+          <Route path="/finanzas/cobrar" element={<CuentasPage key="cxc" tipo="cxc" />} />
+          <Route path="/finanzas/pagar" element={<CuentasPage key="cxp" tipo="cxp" />} />
+          <Route path="/finanzas/ganancia" element={<GananciaPage />} />
+          <Route path="/finanzas/categorias" element={<CategoriasPage />} />
         </Routes>
       </main>
     </div>
