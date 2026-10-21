@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import logoGessi from './assets/logo-gessi.png';
 import EmpleadosPage from './pages/EmpleadosPage';
@@ -8,6 +9,16 @@ import FormatosPage from './pages/FormatosPage';
 import SalidaDetailPage from './pages/SalidaDetailPage';
 import CulturePage from './pages/CulturePage';
 import CultureElementDetailPage from './pages/CultureElementDetailPage';
+import AsistenciaPage from './pages/personal/AsistenciaPage';
+import PrenominaPage from './pages/personal/PrenominaPage';
+import DashboardRondines from './pages/rondines/DashboardRondines';
+import MapaPage from './pages/rondines/MapaPage';
+import AlertasPage from './pages/rondines/AlertasPage';
+import BitacoraPage from './pages/rondines/BitacoraPage';
+import PuntosPage from './pages/rondines/PuntosPage';
+import ServiciosPage from './pages/rondines/ServiciosPage';
+import GuardiasPage from './pages/rondines/GuardiasPage';
+import { rondines } from './api/operacion';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -15,11 +26,21 @@ import ProtectedRoute from './components/ProtectedRoute';
 const PANELES = [
   { id: 'personal', label: 'Personal', to: '/', links: [
     { to: '/', label: 'Empleados', end: true },
+    { to: '/asistencia', label: 'Asistencia' },
+    { to: '/prenomina', label: 'Pre-nómina' },
     { to: '/pagos', label: 'Pagos' },
     { to: '/formatos', label: 'Formatos' },
     { to: '/cultura', label: 'Cultura' },
   ] },
-  { id: 'rondines', label: 'Rondines', to: '/rondines', links: [] },
+  { id: 'rondines', label: 'Rondines', to: '/rondines', links: [
+    { to: '/rondines', label: 'Dashboard', end: true },
+    { to: '/rondines/mapa', label: 'Mapa en vivo' },
+    { to: '/rondines/alertas', label: 'Alertas' },
+    { to: '/rondines/bitacora', label: 'Bitácora' },
+    { to: '/rondines/puntos', label: 'Puntos QR' },
+    { to: '/rondines/clientes', label: 'Clientes' },
+    { to: '/rondines/guardias', label: 'Guardias' },
+  ] },
   { id: 'finanzas', label: 'Finanzas', to: '/finanzas', links: [] },
 ];
 
@@ -45,6 +66,15 @@ function Layout() {
   const { pathname } = useLocation();
   const nombre = localStorage.getItem('nombre');
   const panel = panelActual(pathname);
+  const [sos, setSos] = useState(0);
+
+  // Aviso de SOS visible desde cualquier panel
+  useEffect(() => {
+    const revisar = () => rondines.resumen().then(r => setSos(r.sos_pendientes)).catch(() => {});
+    revisar();
+    const t = setInterval(revisar, 30000);
+    return () => clearInterval(t);
+  }, []);
 
   function logout() {
     localStorage.removeItem('token');
@@ -72,8 +102,14 @@ function Layout() {
           </button>
         </div>
       </header>
+      {sos > 0 && (
+        <button onClick={() => navigate('/rondines/alertas')}
+          className="w-full bg-white text-black border-b-4 border-black py-2 text-sm font-bold uppercase tracking-widest animate-pulse">
+          ⚠ {sos} alerta{sos > 1 ? 's' : ''} SOS sin atender — ver alertas
+        </button>
+      )}
       {panel.links.length > 0 && (
-        <nav className="bg-white border-b border-gray-200 px-6 pt-3 flex gap-6">
+        <nav className="bg-white border-b border-gray-200 px-6 pt-3 flex gap-6 overflow-x-auto whitespace-nowrap">
           {panel.links.map(l => <NavLink key={l.to} to={l.to} end={l.end} className={subLink}>{l.label}</NavLink>)}
         </nav>
       )}
@@ -88,7 +124,15 @@ function Layout() {
           <Route path="/salidas/:id" element={<SalidaDetailPage />} />
           <Route path="/cultura" element={<CulturePage />} />
           <Route path="/cultura/:culturaId" element={<CultureElementDetailPage />} />
-          <Route path="/rondines/*" element={<Proximamente titulo="Rondines" />} />
+          <Route path="/asistencia" element={<AsistenciaPage />} />
+          <Route path="/prenomina" element={<PrenominaPage />} />
+          <Route path="/rondines" element={<DashboardRondines />} />
+          <Route path="/rondines/mapa" element={<MapaPage />} />
+          <Route path="/rondines/alertas" element={<AlertasPage />} />
+          <Route path="/rondines/bitacora" element={<BitacoraPage />} />
+          <Route path="/rondines/puntos" element={<PuntosPage />} />
+          <Route path="/rondines/clientes" element={<ServiciosPage />} />
+          <Route path="/rondines/guardias" element={<GuardiasPage />} />
           <Route path="/finanzas/*" element={<Proximamente titulo="Finanzas" />} />
         </Routes>
       </main>
