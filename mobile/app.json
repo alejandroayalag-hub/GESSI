@@ -6,19 +6,53 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": { "image": "./assets/splash.png", "resizeMode": "contain", "backgroundColor": "#000000" },
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "android": {
       "package": "mx.havocdev.gessi",
-      "adaptiveIcon": { "foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#000000" },
-      "permissions": ["android.permission.CAMERA", "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION", "android.permission.VIBRATE"]
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.VIBRATE",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "plugins": [
-      ["expo-camera", { "cameraPermission": "Se usa la cámara para la selfie de entrada/salida y para escanear los QR de rondín." }],
-      ["expo-location", { "locationWhenInUsePermission": "Se usa la ubicación para confirmar que la checada se hace en la caseta." }],
-      ["expo-build-properties", { "android": { "usesCleartextTraffic": true } }]
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Se usa la cámara para la selfie de entrada/salida y para escanear los QR de rondín."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Se usa la ubicación para confirmar que la checada se hace en la caseta."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "extra": {
-      "apiUrl": "http://62.238.3.136:8101/api"
-    }
+      "apiUrl": "http://62.238.3.136:8101/api",
+      "eas": {
+        "projectId": "96ff500f-90fe-4f29-b697-0495dcfdc221"
+      }
+    },
+    "owner": "alxpho"
   }
 }
