@@ -93,6 +93,8 @@ router.get('/estado', async (req, res, next) => {
     const { rows: puntos } = s.tiene_rondines
       ? await pool.query('SELECT id, nombre, descripcion, orden FROM puntos_rondin WHERE servicio_id = $1 AND activo ORDER BY orden, nombre', [s.id])
       : { rows: [] };
+    // empleados.foto guarda la ruta absoluta en disco (heredado de RHATA): exponer solo la URL pública
+    for (const g of guardias) g.foto = g.foto ? `/uploads/${path.basename(g.foto)}` : null;
     res.json({
       servicio: { id: s.id, nombre: s.nombre, tiene_rondines: s.tiene_rondines },
       guardias, puntos,
