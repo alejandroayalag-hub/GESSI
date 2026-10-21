@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const errorHandler = require('./middleware/errorHandler');
 const authMiddleware = require('./middleware/auth');
 const runMigrations = require('./db/migrate');
+const { iniciarVigilancia } = require('./lib/vigilancia');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -38,6 +39,13 @@ app.use('/api/formatos',  authMiddleware, require('./routes/formatos'));
 app.use('/api/salidas', authMiddleware, require('./routes/salidas'));
 app.use('/api/documentosSalida', authMiddleware, require('./routes/documentosSalida'));
 app.use('/api/culturas', authMiddleware, require('./routes/culturas'));
+app.use('/api/servicios', authMiddleware, require('./routes/servicios'));
+app.use('/api/guardias',  authMiddleware, require('./routes/guardias'));
+app.use('/api/rondines',  authMiddleware, require('./routes/rondines'));
+app.use('/api/jornadas',  authMiddleware, require('./routes/jornadas'));
+
+// Celular de caseta: su propio token de dispositivo (ver routes/caseta.js)
+app.use('/api/caseta', require('./routes/caseta'));
 
 app.use(errorHandler);
 
@@ -45,6 +53,7 @@ runMigrations()
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Backend GESSI corriendo en puerto ${PORT}`);
+      iniciarVigilancia();
     });
   })
   .catch(err => {
