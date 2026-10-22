@@ -72,6 +72,9 @@ function FormServicio({ inicial, onGuardado, onClose }) {
   );
 }
 
+// APK servido por nginx fuera de dist (/home/apps/gessi/descargas)
+const APK = '/descargas/gessi-caseta.apk';
+
 function Vincular({ servicio, onClose, onCambio }) {
   const [codigo, setCodigo] = useState(servicio.codigo_vinculacion);
   const [error, setError] = useState('');
@@ -96,6 +99,7 @@ function Vincular({ servicio, onClose, onCambio }) {
             <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">Código de vinculación</p>
             <p className="text-5xl font-bold tracking-[0.3em] text-black">{codigo}</p>
             <p className="text-xs text-neutral-500 mt-3">Escríbelo en la app GESSI del celular de la caseta. Sirve una sola vez.</p>
+            <p className="text-xs mt-2">¿No tiene la app? <a href={APK} download className="underline font-semibold">Descargar APK</a></p>
           </div>
         ) : (
           <button className={btn} onClick={generar}>
@@ -125,7 +129,10 @@ export default function ServiciosPage() {
           <h1 className={titulo}>Clientes</h1>
           <p className="text-sm text-neutral-500">Servicios contratados, su caseta y su celular.</p>
         </div>
-        <button className={btn} onClick={() => setEditando(VACIO)}>+ Nuevo cliente</button>
+        <div className="flex gap-2">
+          <a className={btnSec} href={APK} download>Descargar app caseta (APK)</a>
+          <button className={btn} onClick={() => setEditando(VACIO)}>+ Nuevo cliente</button>
+        </div>
       </div>
       <div className={`${card} overflow-x-auto`}>
         <table className="w-full">
