@@ -129,7 +129,11 @@ router.get('/resumen', async (req, res, next) => {
 router.get('/en-vivo', async (req, res, next) => {
   try {
     const { rows: servicios } = await pool.query(
-      'SELECT id, nombre, latitud, longitud, radio_metros, tiene_rondines, intervalo_rondin_min FROM servicios WHERE activo ORDER BY nombre');
+      `SELECT s.id, s.nombre, s.latitud, s.longitud, s.radio_metros, s.tiene_rondines, s.intervalo_rondin_min,
+              COUNT(a.id) FILTER (WHERE a.tipo = 'sos')::int  AS sos,
+              COUNT(a.id) FILTER (WHERE a.tipo <> 'sos')::int AS incidentes
+       FROM servicios s LEFT JOIN alertas a ON a.servicio_id = s.id AND NOT a.resuelta
+       WHERE s.activo GROUP BY s.id ORDER BY s.nombre`);
     const { rows: guardias } = await pool.query(`
       SELECT j.id AS jornada_id, j.entrada_at, j.servicio_id, j.entrada_foto, j.entrada_en_zona,
              e.id AS empleado_id, ${NOMBRE_EMP} AS nombre,

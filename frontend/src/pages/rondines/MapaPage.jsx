@@ -9,15 +9,20 @@ const URUAPAN = [19.4195, -102.063];
 
 const iniciales = (n) => n.split(' ').slice(0, 2).map(p => p[0]).join('').toUpperCase();
 
-// Guardia: círculo negro con iniciales; borde punteado si su rondín está atrasado
-const iconoGuardia = (g, atrasado) => L.divIcon({
+// Semáforo: verde OK, amarillo incidente (rondín atrasado, fuera de zona, alerta sin resolver), rojo SOS
+const COLOR = { ok: '#16a34a', incidente: '#eab308', alerta: '#dc2626' };
+
+const estadoServicio = (s) => s?.sos ? 'alerta' : s?.incidentes ? 'incidente' : 'ok';
+
+// Guardia: círculo de color con iniciales
+const iconoGuardia = (g, estado) => L.divIcon({
   className: '',
-  html: `<div style="width:34px;height:34px;border-radius:50%;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font:600 12px system-ui;border:3px ${atrasado ? 'dashed' : 'solid'} #fff;box-shadow:0 0 0 2px #000">${iniciales(g.nombre)}</div>`,
+  html: `<div style="width:34px;height:34px;border-radius:50%;background:${COLOR[estado]};color:#fff;display:flex;align-items:center;justify-content:center;font:600 12px system-ui;border:3px solid #fff;box-shadow:0 0 0 2px #000${estado === 'alerta' ? ';animation:pulse 1s infinite' : ''}">${iniciales(g.nombre)}</div>`,
   iconSize: [34, 34], iconAnchor: [17, 17],
 });
-const iconoCaseta = L.divIcon({
+const iconoCaseta = (estado) => L.divIcon({
   className: '',
-  html: '<div style="width:22px;height:22px;background:#fff;border:3px solid #000;border-radius:4px"></div>',
+  html: `<div style="width:22px;height:22px;background:${COLOR[estado]};border:3px solid #000;border-radius:4px"></div>`,
   iconSize: [22, 22], iconAnchor: [11, 11],
 });
 const iconoPunto = L.divIcon({
@@ -57,6 +62,12 @@ export default function MapaPage() {
     const ref = new Date(g.ultimo_escaneo || g.entrada_at);
     return (Date.now() - ref) / 60000 > s.intervalo_rondin_min;
   };
+  const estadoGuardia = (g) => {
+    const e = estadoServicio(serviciosPorId[g.servicio_id]);
+    if (e === 'ok' && (atrasado(g) || g.entrada_en_zona === false)) return 'incidente';
+    return e;
+  };
+  const Punto = ({ estado }) => <span className="inline-block w-2.5 h-2.5 rounded-full mr-1.5 align-middle" style={{ background: COLOR[estado] }} />;
 
   return (
     <div className="space-y-4">
@@ -72,11 +83,13 @@ export default function MapaPage() {
             const gs = datos.guardias.filter(g => g.servicio_id === s.id);
             return (
               <div key={s.id}>
-                <p className="text-sm font-semibold">{s.nombre}</p>
+                <p className="text-sm font-semibold"><Punto estado={estadoServicio(s)} />{s.nombre}</p>
+                {s.sos > 0 && <p className="text-xs font-semibold" style={{ color: COLOR.alerta }}>SOS sin atender</p>}
+                {s.incidentes > 0 && <p className="text-xs" style={{ color: '#a16207' }}>{s.incidentes} incidente{s.incidentes > 1 ? 's' : ''} sin resolver</p>}
                 {gs.length === 0 && <p className="text-xs text-neutral-400">Sin guardia en turno</p>}
                 {gs.map(g => (
                   <div key={g.jornada_id} className="text-xs text-neutral-700 mt-1">
-                    {g.nombre} · desde {hora(g.entrada_at)}
+                    <Punto estado={estadoGuardia(g)} />{g.nombre} · desde {hora(g.entrada_at)}
                     {s.tiene_rondines && <div className="text-neutral-500">
                       {g.ultimo_punto ? `Último: ${g.ultimo_punto} ${hora(g.ultimo_escaneo)}` : 'Sin rondín aún'}
                       {atrasado(g) && <span className={`${chip(true)} ml-1`}>ATRASADO</span>}
@@ -88,7 +101,7 @@ export default function MapaPage() {
           })}
           <div className="border-t border-neutral-200 pt-3 text-xs text-neutral-500 space-y-1">
             <p>■ Caseta · ◆ Punto QR · ● Guardia</p>
-            <p>Borde punteado = rondín atrasado</p>
+            <p><Punto estado="ok" />OK · <Punto estado="incidente" />Incidente · <Punto estado="alerta" />Alerta SOS</p>
           </div>
         </div>
         <div className={`${card} overflow-hidden h-[70vh] mapa-gessi`}>
@@ -97,16 +110,16 @@ export default function MapaPage() {
             <Encuadre puntos={datos.servicios.filter(conGps).map(pos)} />
             {datos.servicios.filter(conGps).map(s => (
               <Circle key={`c${s.id}`} center={pos(s)} radius={s.radio_metros}
-                pathOptions={{ color: '#000', weight: 1, fillOpacity: 0.05, dashArray: '4' }} />
+                pathOptions={{ color: COLOR[estadoServicio(s)], weight: 2, fillOpacity: 0.05, dashArray: '4' }} />
             ))}
             {datos.servicios.filter(conGps).map(s => (
-              <Marker key={`s${s.id}`} position={pos(s)} icon={iconoCaseta}><Popup><b>{s.nombre}</b><br />Caseta</Popup></Marker>
+              <Marker key={`s${s.id}`} position={pos(s)} icon={iconoCaseta(estadoServicio(s))}><Popup><b>{s.nombre}</b><br />Caseta</Popup></Marker>
             ))}
             {datos.puntos.filter(conGps).map(p => (
               <Marker key={`p${p.id}`} position={pos(p)} icon={iconoPunto}><Popup><b>{p.nombre}</b><br />Punto de rondín</Popup></Marker>
             ))}
             {datos.guardias.filter(conGps).map(g => (
-              <Marker key={`g${g.jornada_id}`} position={pos(g)} icon={iconoGuardia(g, atrasado(g))}>
+              <Marker key={`g${g.jornada_id}`} position={pos(g)} icon={iconoGuardia(g, estadoGuardia(g))}>
                 <Popup>
                   <b>{g.nombre}</b><br />{serviciosPorId[g.servicio_id]?.nombre}<br />
                   En turno desde {hora(g.entrada_at)} · {g.escaneos} escaneos
