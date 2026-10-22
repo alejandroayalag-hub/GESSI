@@ -67,6 +67,13 @@ function panelActual(pathname) {
   return PANELES.find(p => p.id !== 'personal' && pathname.startsWith(p.to)) || PANELES[0];
 }
 
+// Íconos estilo lucide (users, shield-check, dollar-sign) en SVG para no agregar dependencia
+const ICONOS = {
+  personal: <><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></>,
+  rondines: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></>,
+  finanzas: <><line x1="12" x2="12" y1="2" y2="22" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>,
+};
+
 const panelesVisibles = () => PANELES.filter(p => !p.soloAdmin || rolActual() === 'admin');
 
 function Escritorio() {
@@ -79,8 +86,8 @@ function Escritorio() {
         {panelesVisibles().map(p => (
           <button key={p.id} onClick={() => navigate(p.to)}
             className="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:border-black active:scale-95">
-            <div className="w-14 h-14 rounded-2xl mx-auto mb-4 bg-black text-white flex items-center justify-center text-2xl font-bold">
-              {p.label[0]}
+            <div className="w-14 h-14 rounded-2xl mx-auto mb-4 bg-black text-white flex items-center justify-center">
+              <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{ICONOS[p.id]}</svg>
             </div>
             <h2 className="text-lg font-bold uppercase tracking-widest mb-2">{p.label}</h2>
             <p className="text-xs text-gray-500 leading-relaxed">{p.desc}</p>
