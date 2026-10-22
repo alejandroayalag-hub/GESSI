@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GESSI Seguridad Privada | Uruapan, Michoacán</title>
+<meta name="description" content="Seguridad privada, control de confianza, inteligencia empresarial, formación y consultoría en Uruapan, Michoacán. Desde 2006.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_MX">
+<meta property="og:title" content="GESSI Seguridad Privada">
+<meta property="og:description" content="Oficiales certificados, control de confianza e inteligencia empresarial en Uruapan, Michoacán, desde 2006.">
+<meta property="og:image" content="assets/sello.png">
+<meta name="theme-color" content="#000000">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --negro:#000;--blanco:#fff;--gris:#5c5c5c;--gris-osc:#a3a3a3;--linea:#d9d9d9;--linea-osc:#333;--humo:#f3f3f3;
+  --ancho:1180px;--g:clamp(16px,4vw,40px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Archivo,system-ui,sans-serif;font-size:1.0625rem;line-height:1.6;color:var(--negro);background:var(--blanco);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{display:block;max-width:100%}
+:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+.env{max-width:var(--ancho);margin:0 auto;padding:0 var(--g)}
+.oscuro{background:var(--negro);color:var(--blanco)}
+.oscuro .tenue{color:var(--gris-osc)}
+.tenue{color:var(--gris)}
+
+/* tipografía: Archivo condensada para titulares, ancho normal para lectura */
+h1,h2,h3,.cond{font-stretch:68%;font-weight:800;line-height:.95;letter-spacing:-.01em}
+h1{font-size:clamp(3rem,8.4vw,6.6rem)}
+h2{font-size:clamp(2.3rem,5.4vw,4.2rem);max-width:16ch}
+h3{font-size:clamp(1.6rem,3.2vw,2.3rem)}
+.lead{font-size:clamp(1.15rem,1.8vw,1.35rem);max-width:46ch;line-height:1.5}
+.sec{padding:clamp(72px,11vw,140px) 0}
+
+.btn{display:inline-flex;align-items:center;gap:.5em;padding:.95em 1.5em;font:inherit;font-weight:600;font-size:1rem;text-decoration:none;border:2px solid currentColor;border-radius:999px;transition:background .15s,color .15s}
+.btn-lleno{background:var(--blanco);color:var(--negro);border-color:var(--blanco)}
+.btn-lleno:hover{background:transparent;color:var(--blanco)}
+.btn-hueco:hover{background:var(--blanco);color:var(--negro)}
+.claro .btn-lleno{background:var(--negro);color:var(--blanco);border-color:var(--negro)}
+.claro .btn-lleno:hover{background:transparent;color:var(--negro)}
+
+/* navegación */
+.nav{position:sticky;top:0;z-index:10;background:var(--negro);color:var(--blanco);border-bottom:1px solid var(--linea-osc)}
+.nav .env{display:flex;align-items:center;justify-content:space-between;height:68px;gap:24px}
+.marca{display:flex;align-items:center;gap:12px;text-decoration:none}
+.marca img{width:40px;height:40px}
+.marca span{font-stretch:68%;font-weight:800;font-size:1.45rem;letter-spacing:.02em}
+.nav ul{display:flex;gap:28px;list-style:none;margin-left:auto}
+.nav ul a{text-decoration:none;font-size:.95rem;color:var(--gris-osc)}
+.nav ul a:hover{color:var(--blanco)}
+.nav .btn{padding:.6em 1.15em;font-size:.9rem}
+@media (max-width:760px){.nav ul{display:none}}
+
+/* hero: el sello circular es el elemento memorable */
+.hero{overflow:hidden}
+.hero .env{display:grid;grid-template-columns:1.25fr 1fr;align-items:center;gap:40px;padding-top:clamp(56px,9vw,110px);padding-bottom:clamp(64px,10vw,120px)}
+.hero p.lead{margin:28px 0 36px}
+.acciones{display:flex;flex-wrap:wrap;gap:12px}
+.sello{position:relative;width:min(100%,460px);aspect-ratio:1;justify-self:center}
+.sello img{position:absolute;inset:17%;width:66%;height:66%}
+.sello svg{position:absolute;inset:0;width:100%;height:100%;animation:gira 70s linear infinite}
+.sello text{fill:var(--blanco);font-stretch:68%;font-weight:600;font-size:15.5px;letter-spacing:.18em}
+@keyframes gira{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.sello svg{animation:none}html{scroll-behavior:auto}}
+@media (max-width:860px){.hero .env{grid-template-columns:1fr}.sello{width:min(78vw,340px);order:-1;justify-self:start}}
+
+/* credenciales */
+.credenciales{border-bottom:1px solid var(--linea)}
+.credenciales ul{list-style:none;display:grid;grid-template-columns:repeat(4,1fr)}
+.credenciales li{padding:36px 28px 36px 0}
+.credenciales li+li{padding-left:28px;border-left:1px solid var(--linea)}
+.credenciales strong{display:block;font-stretch:68%;font-weight:800;font-size:1.65rem;line-height:1.05;margin-bottom:8px}
+.credenciales span{font-size:.95rem}
+@media (max-width:900px){
+  .credenciales ul{grid-template-columns:1fr 1fr}
+  .credenciales li,.credenciales li+li{padding:28px 20px 28px 0;border-left:0}
+  .credenciales li:nth-child(even){padding-left:20px;border-left:1px solid var(--linea)}
+  .credenciales li:nth-child(n+3){border-top:1px solid var(--linea)}
+}
+@media (max-width:480px){
+  .credenciales ul{grid-template-columns:1fr}
+  .credenciales li:nth-child(even){padding-left:0;border-left:0}
+  .credenciales li+li{border-top:1px solid var(--linea)}
+}
+
+/* por qué */
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,96px);align-items:start}
+.dos p+p{margin-top:1em}
+.costos{list-style:none;margin-top:36px;border-top:2px solid var(--negro)}
+.costos li{padding:18px 0;border-bottom:1px solid var(--linea);display:flex;gap:16px;align-items:baseline}
+.costos b{font-stretch:68%;font-weight:800;font-size:1.35rem;min-width:9.5ch}
+@media (max-width:860px){.dos{grid-template-columns:1fr}}
+
+/* servicios: lista desplegable nativa */
+.servicios{background:var(--humo)}
+.servicios h2{margin-bottom:20px}
+.servicios .lead{margin-bottom:56px}
+.unidad{border-top:2px solid var(--negro)}
+.unidad:last-of-type{border-bottom:2px solid var(--negro)}
+.unidad summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) 44px;gap:24px;align-items:center;padding:28px 0}
+.unidad summary::-webkit-details-marker{display:none}
+.unidad summary span{font-size:1rem}
+.unidad summary i{width:44px;height:44px;border:2px solid var(--negro);border-radius:50%;position:relative;transition:background .15s}
+.unidad summary i::before,.unidad summary i::after{content:"";position:absolute;left:50%;top:50%;width:16px;height:2px;background:currentColor;translate:-50% -50%;transition:rotate .2s}
+.unidad summary i::after{rotate:90deg}
+.unidad[open] summary i::after{rotate:0deg}
+.unidad summary:hover i{background:var(--negro);color:var(--blanco)}
+.unidad ul{list-style:none;columns:3 220px;column-gap:40px;padding:0 0 36px}
+.unidad li{break-inside:avoid;padding:9px 0 9px 22px;position:relative;font-size:.98rem;border-bottom:1px solid var(--linea)}
+.unidad li::before{content:"";position:absolute;left:0;top:1.05em;width:10px;height:10px;border:2px solid var(--negro);border-radius:50%}
+@media (max-width:760px){.unidad summary{grid-template-columns:1fr 44px}.unidad summary span{grid-column:1;grid-row:2}.unidad summary i{grid-row:1/3;grid-column:2}}
+
+/* VSA */
+.vsa .dos{align-items:center}
+.vsa blockquote{font-stretch:68%;font-weight:700;font-size:clamp(1.7rem,3.4vw,2.6rem);line-height:1.08;border-left:3px solid var(--blanco);padding-left:24px;margin:32px 0}
+.usos{list-style:none;border-top:1px solid var(--linea-osc)}
+.usos li{padding:20px 0;border-bottom:1px solid var(--linea-osc);font-size:1.15rem}
+
+/* supervisión */
+.funciones{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:56px;border-top:2px solid var(--negro)}
+.funciones div{padding:28px 24px 0 0}
+.funciones div+div{padding-left:24px;border-left:1px solid var(--linea)}
+.funciones h3{font-size:1.5rem;margin-bottom:10px}
+.funciones p{font-size:.98rem}
+@media (max-width:900px){.funciones{grid-template-columns:1fr 1fr}.funciones div,.funciones div+div{padding:28px 20px 28px 0;border-left:0;border-bottom:1px solid var(--linea)}}
+@media (max-width:480px){.funciones{grid-template-columns:1fr}}
+
+/* nosotros */
+.nosotros .dos{margin-top:56px}
+.nosotros h3{margin-bottom:12px}
+.nosotros .bloque+.bloque{margin-top:40px}
+.valores{list-style:none;margin-top:72px;display:flex;flex-wrap:wrap;gap:0 .5em;font-stretch:62%;font-weight:900;font-size:clamp(2.4rem,7vw,5.6rem);line-height:1}
+.valores li:nth-child(even){-webkit-text-stroke:clamp(1px,.25vw,2px) var(--negro);color:transparent}
+
+/* membresías */
+.membresias{border-top:1px solid var(--linea)}
+.membresias .env{display:grid;grid-template-columns:1fr 3fr;gap:40px;padding-top:56px;padding-bottom:56px;align-items:start}
+.membresias h2{font-size:1.9rem}
+.membresias ul{list-style:none;display:grid;grid-template-columns:repeat(5,1fr);gap:32px}
+.membresias li{display:flex;flex-direction:column;gap:12px}
+.membresias img,.membresias b{height:88px;width:100%;object-fit:contain;object-position:left center}
+.membresias b{display:flex;align-items:center;font-stretch:68%;font-weight:800;font-size:1.3rem;line-height:1.05}
+.membresias span{font-size:.9rem;line-height:1.4}
+@media (max-width:960px){.membresias .env{grid-template-columns:1fr}.membresias ul{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+
+/* contacto */
+.contacto .correo{display:inline-block;margin:36px 0 12px;font-stretch:68%;font-weight:800;font-size:clamp(1.5rem,4.6vw,3.4rem);line-height:1.05;text-decoration-thickness:2px;text-underline-offset:8px;overflow-wrap:anywhere}
+.contacto .datos{display:flex;flex-wrap:wrap;gap:12px 48px;margin:28px 0 40px}
+.contacto .datos b{display:block;font-weight:600}
+footer{background:var(--negro);color:var(--gris-osc);border-top:1px solid var(--linea-osc);font-size:.9rem}
+footer .env{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:28px;padding-bottom:28px}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="env">
+    <a class="marca" href="#inicio" aria-label="GESSI, inicio">
+      <img src="assets/sello.png" alt="" width="40" height="40">
+      <span>GESSI</span>
+    </a>
+    <nav aria-label="Principal">
+      <ul>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#control-de-confianza">Control de confianza</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-hueco" href="#contacto">Cotizar</a>
+  </div>
+</header>
+
+<main id="inicio">
+
+<section class="hero oscuro">
+  <div class="env">
+    <div>
+      <h1>Protegemos lo que a su empresa le costó construir.</h1>
+      <p class="lead tenue">Oficiales de seguridad certificados, control de confianza e inteligencia empresarial en Uruapan, Michoacán, desde 2006.</p>
+      <div class="acciones">
+        <a class="btn btn-lleno" href="mailto:cluna@solucionesenseguridad.com.mx?subject=Solicitud%20de%20cotizaci%C3%B3n">Solicitar cotización</a>
+        <a class="btn btn-hueco" href="#servicios">Ver servicios</a>
+      </div>
+    </div>
+    <div class="sello">
+      <svg viewBox="0 0 400 400" aria-hidden="true">
+        <defs><path id="anillo" d="M200,200 m-182,0 a182,182 0 1,1 364,0 a182,182 0 1,1 -364,0"/></defs>
+        <text><textPath href="#anillo" textLength="1135">CONFIDENCIALIDAD ✦ HONESTIDAD ✦ PROFESIONALISMO ✦ COMPROMISO ✦ INTEGRIDAD ✦</textPath></text>
+      </svg>
+      <img src="assets/sello.png" alt="Sello de GESSI, Grupo Especialista en Soluciones de Seguridad e Inteligencia" width="560" height="560">
+    </div>
+  </div>
+</section>
+
+<section class="credenciales claro" aria-label="Credenciales">
+  <div class="env">
+    <ul>
+      <li><strong>Desde 2006</strong><span class="tenue">Más de 20 años protegiendo empresas e instituciones.</span></li>
+      <li><strong>24 horas, 365 días</strong><span class="tenue">Cobertura permanente con oficiales supervisados.</span></li>
+      <li><strong>Certificados por la SSP</strong><span class="tenue">Unidad certificada por la Secretaría de Seguridad Pública de Michoacán.</span></li>
+      <li><strong>Registro ante la STPS</strong><span class="tenue">Programa de entrenamiento con estándares ASIS e IFPO.</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec claro">
+  <div class="env dos">
+    <div>
+      <h2>La inseguridad también es un costo de operación.</h2>
+      <ul class="costos">
+        <li><b>Bienes</b><span class="tenue">El valor de lo robado.</span></li>
+        <li><b>Operación</b><span class="tenue">Horas y turnos perdidos por interrupciones.</span></li>
+        <li><b>Reputación</b><span class="tenue">La confianza de sus clientes y los costos legales.</span></li>
+      </ul>
+    </div>
+    <div class="lead">
+      <p>La inseguridad en México cambia de una región a otra, y cada empresa enfrenta riesgos distintos según su giro, su ubicación y su tamaño.</p>
+      <p>Por eso empezamos con un análisis de riesgo: detectamos, analizamos y evaluamos qué medidas de prevención necesita su empresa, y priorizamos las que evitan la mayor pérdida.</p>
+      <p>Después las operamos con personal capacitado y supervisado, y con procesos basados en estándares internacionales de protección patrimonial.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec servicios claro" id="servicios">
+  <div class="env">
+    <h2>Siete unidades de negocio, un mismo estándar.</h2>
+    <p class="lead tenue">Elija un área para ver lo que incluye.</p>
+
+    <details class="unidad">
+      <summary><h3>Seguridad intramuros</h3><span class="tenue">Oficiales de seguridad para empresas e instituciones, las 24 horas, los 365 días del año.</span><i aria-hidden="true"></i></summary>
+      <ul>
+        <li>Análisis de riesgo para determinar el grado de seguridad</li>
+        <li>Oficiales evaluados con nuestro programa de control de confianza</li>
+        <li>Entrenamiento registrado ante la STPS</li>
+        <li>Estándares ASIS International e IFPO</li>
+        <li>Cobertura de áreas vulnerables a pérdidas</li>
+        <li>Supervisión de rondines en tiempo real</li>
+      </ul>
+    </details>
+
+    <details class="unidad">
+      <summary><h3>Control de confianza</h3><span class="tenue">Evaluación de integridad laboral y personal con análisis de estrés de voz (VSA).</span><i aria-hidden="true"></i></summary>
+      <ul>
+        <li>Reclutamiento y selección de personal</li>
+        <li>Evaluación de honestidad y confiabilidad</li>
+        <li>Prevención de secuestro, actos delictivos y fraudes</li>
+        <li>Investigaciones de toda clase</li>
+      </ul>
+    </details>
+
+    <details class="unidad">
+      <summary><h3>Inteligencia empresarial</h3><span class="tenue">Investigación, criminología empresarial e inteligencia privada para resolver problemas internos ocultos.</span><i aria-hidden="true"></i></summary>
+      <ul>
+        <li>Inteligencia empresarial y corporativa</li>
+        <li>Contraespionaje electrónico</li>
+        <li>Inteligencia antisecuestro</li>
+        <li>Inteligencia privada e investigaciones</li>
+        <li>Seguridad invisible</li>
+      </ul>
+    </details>
+
+    <details class="unidad">
+      <summary><h3>Escuela de formación</h3><span class="tenue">Entrenamiento profesional en seguridad y protección para escenarios de alto riesgo.</span><i aria-hidden="true"></i></summary>
+      <ul>
+        <li>Krav Maga, sistema de defensa israelí</li>
+        <li>Prevención de secuestro y análisis de rutas</li>
+        <li>Vigilancia y contravigilancia</li>
+        <li>Protección ejecutiva VIP</li>
+        <li>Manejo defensivo evasivo</li>
+        <li>Tiro defensivo y táctico</li>
+        <li>Medicina táctica (TECC y TCCC)</li>
+        <li>Combate en áreas restringidas (CQB)</li>
+        <li>Técnicas de intervención policial</li>
+        <li>Manejo de crisis</li>
+        <li>Soporte vital básico (BLS)</li>
+        <li>Emergencias médicas básicas y avanzadas</li>
+        <li>Formación de brigadas de emergencia</li>
+        <li>Seguridad industrial</li>
+        <li>Protección civil</li>
+        <li>Entrenamiento de personal de seguridad de empresas</li>
+        <li>Formación de oficiales de seguridad</li>
+      </ul>
+    </details>
+
+    <details class="unidad">
+      <summary><h3>Eventos especiales</h3><span class="tenue">Planeación y operación de la seguridad de su evento, con oficiales, paramédicos y ambulancia.</span><i aria-hidden="true"></i></summary>
+      <ul>
+        <li>Personal para control de accesos</li>
+        <li>Detectores de metales</li>
+        <li>Radios de comunicación</li>
+        <li>Ambulancia de terapia intensiva</li>
+        <li>Paramédicos y médicos</li>
+        <li>Puestos de atención médica</li>
+        <li>Extintores</li>
+      </ul>
+    </details>
+
+    <details class="unidad">
+      <summary><h3>Consultoría</h3><span class="tenue">Programas y procesos de seguridad a la medida, para empresas y familias.</span><i aria-hidden="true"></i></summary>
+      <ul>
+        <li>Análisis de riesgos y vulnerabilidad</li>
+        <li>Auditorías de seguridad</li>
+        <li>Programas de seguridad industrial</li>
+        <li>Programas de seguridad patrimonial</li>
+        <li>Planes de contingencia y protección civil</li>
+        <li>Prevención y combate de incendios</li>
+        <li>Programas de entrenamiento especial</li>
+        <li>Programas antisecuestro corporativos y familiares</li>
+        <li>Prevención de accidentes</li>
+        <li>Manejo de crisis</li>
+        <li>Seguridad física</li>
+        <li>Investigaciones especiales</li>
+        <li>Negociación de rehenes y secuestros</li>
+        <li>Formación de equipos de seguridad armada y sin arma</li>
+      </ul>
+    </details>
+
+    <details class="unidad">
+      <summary><h3>Seguridad médica empresarial</h3><span class="tenue">Atención prehospitalaria en su empresa y traslado de su personal al hospital.</span><i aria-hidden="true"></i></summary>
+      <ul>
+        <li>Consultorios médicos en el lugar</li>
+        <li>Médicos y enfermeras especializadas</li>
+        <li>Custodias médicas</li>
+        <li>Paramédicos</li>
+        <li>Cobertura de eventos especiales</li>
+        <li>Ambulancia en el lugar</li>
+        <li>Formación de brigadistas de primeros auxilios</li>
+        <li>Traslados médicos dentro y fuera del estado</li>
+        <li>Ambulancia aérea internacional</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<section class="sec vsa oscuro" id="control-de-confianza">
+  <div class="env dos">
+    <div>
+      <h2>Los únicos en el estado con análisis de estrés de voz.</h2>
+      <blockquote>No es ciencia nueva: es tecnología nueva de origen militar.</blockquote>
+      <p class="lead tenue">El VSA mide el nivel de estrés psicológico en la voz humana. Lo desarrolló el ejército de Estados Unidos y es un método no invasivo: no se conecta nada a la persona entrevistada.</p>
+    </div>
+    <div>
+      <p class="tenue" style="margin-bottom:16px">Lo usamos para:</p>
+      <ul class="usos">
+        <li>Reclutar y seleccionar personal</li>
+        <li>Evaluar la honestidad y confiabilidad de su equipo</li>
+        <li>Prevenir secuestros, actos delictivos y fraudes</li>
+        <li>Apoyar investigaciones de toda clase</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec claro">
+  <div class="env">
+    <h2>Cada rondín queda registrado en tiempo real.</h2>
+    <p class="lead tenue" style="margin-top:20px">Nuestros oficiales trabajan con una app propia. Usted ve lo que pasa en su inmueble sin esperar al reporte del día siguiente.</p>
+    <div class="funciones">
+      <div><h3>Puntos con QR</h3><p class="tenue">El oficial escanea cada punto de control en su recorrido.</p></div>
+      <div><h3>Mapa en vivo</h3><p class="tenue">La ubicación de cada oficial durante su turno.</p></div>
+      <div><h3>Alertas y SOS</h3><p class="tenue">Los incidentes y emergencias llegan al centro de mando al instante.</p></div>
+      <div><h3>Bitácora digital</h3><p class="tenue">El historial de recorridos e incidentes, listo para consultar.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec nosotros claro" id="nosotros" style="padding-top:0">
+  <div class="env">
+    <h2>Gente honesta, comprometida con sus socios de negocio.</h2>
+    <div class="dos">
+      <div class="lead">
+        <p>Grupo Especialista en Soluciones de Seguridad e Inteligencia nació en 2006 para ofrecer soluciones de seguridad profesionales y rentables a personas, empresas e instituciones.</p>
+        <p>Trabajamos con estándares y prácticas internacionales, tecnología y personal certificado, para que su operación no se detenga.</p>
+      </div>
+      <div>
+        <div class="bloque">
+          <h3>Misión</h3>
+          <p class="tenue">Brindar servicios de seguridad integral de alta calidad con estándares y prácticas mundiales, procesos a la medida de cada cliente, personal confiable y tecnología de punta.</p>
+        </div>
+        <div class="bloque">
+          <h3>Visión</h3>
+          <p class="tenue">Ser líderes del mercado en seguridad, protección y consultoría privada, cumpliendo estándares nacionales e internacionales y los principios éticos que exige la profesión.</p>
+        </div>
+      </div>
+    </div>
+    <ul class="valores" aria-label="Valores">
+      <li>Confidencialidad</li><li>Honestidad</li><li>Profesionalismo</li><li>Compromiso</li><li>Integridad</li>
+    </ul>
+  </div>
+</section>
+
+<section class="membresias claro">
+  <div class="env">
+    <h2>Membresías y registros</h2>
+    <ul>
+      <li><img src="assets/asis.png" alt="ASIS International" width="193" height="100" loading="lazy"><span class="tenue">American Society for Industrial Security</span></li>
+      <li><img src="assets/ifpo.png" alt="IFPO México" width="135" height="166" loading="lazy"><span class="tenue">International Foundation for Protection Officers</span></li>
+      <li><b>American Polygraph and Voice Stress Association</b><span class="tenue">Análisis de estrés de voz</span></li>
+      <li><img src="assets/aespmich.png" alt="AESPMICH A.C." width="506" height="370" loading="lazy"><span class="tenue">Asociación de Empresas de Seguridad Privada de Michoacán</span></li>
+      <li><img src="assets/repse.png" alt="REPSE" width="167" height="83" loading="lazy"><span class="tenue">Registro de Prestadoras de Servicios Especializados</span></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec contacto oscuro" id="contacto">
+  <div class="env">
+    <h2>Hablemos de la seguridad de su empresa.</h2>
+    <a class="correo" href="mailto:cluna@solucionesenseguridad.com.mx?subject=Solicitud%20de%20cotizaci%C3%B3n">cluna@solucionesenseguridad.com.mx</a>
+    <div class="datos tenue">
+      <p><b>Ubicación</b>Uruapan, Michoacán</p>
+      <p><b>Atiende</b>Claudio Ernesto Luna López, Director General</p>
+    </div>
+    <a class="btn btn-lleno" href="mailto:cluna@solucionesenseguridad.com.mx?subject=Solicitud%20de%20cotizaci%C3%B3n">Solicitar cotización</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="env">
+    <span>© 2026 GESSI Seguridad Privada</span>
+    <span>Grupo Especialista en Soluciones de Seguridad e Inteligencia</span>
+  </div>
+</footer>
+
+</body>
+</html>

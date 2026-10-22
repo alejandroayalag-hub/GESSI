@@ -20,6 +20,10 @@ echo "→ Sincronizando frontend dist..."
 rsync -az -e "$SSH" --delete --chown=apps:apps \
   "$ROOT_DIR/frontend/dist/" $SERVER:/home/apps/gessi/frontend/dist/
 
+echo "→ Sincronizando landing (nginx :8102)..."
+rsync -az -e "$SSH" --delete --chmod=a+rX \
+  "$ROOT_DIR/landing/" $SERVER:/var/www/gessi-landing/
+
 echo "→ Instalando dependencias y reiniciando..."
 $SSH $SERVER "cd /home/apps/gessi/backend && sudo -u apps npm install --omit=dev --silent && sudo -u apps pm2 restart gessi-backend"
 
