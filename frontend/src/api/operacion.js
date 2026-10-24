@@ -27,6 +27,9 @@ export const rondines = {
   resolverAlerta: (id) => d(api.put(`/rondines/alertas/${id}/resolver`)),
   resumen: () => d(api.get('/rondines/resumen')),
   enVivo: () => d(api.get('/rondines/en-vivo')),
+  avisos: (params) => d(api.get('/rondines/avisos', { params })),
+  publicarAviso: (data) => d(api.post('/rondines/avisos', data)),
+  retirarAviso: (id) => d(api.put(`/rondines/avisos/${id}/retirar`)),
 };
 
 export const jornadas = {

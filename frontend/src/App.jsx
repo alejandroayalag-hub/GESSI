@@ -14,6 +14,7 @@ import PrenominaPage from './pages/personal/PrenominaPage';
 import DashboardRondines from './pages/rondines/DashboardRondines';
 import MapaPage from './pages/rondines/MapaPage';
 import AlertasPage from './pages/rondines/AlertasPage';
+import PizarronPage from './pages/rondines/PizarronPage';
 import BitacoraPage from './pages/rondines/BitacoraPage';
 import PuntosPage from './pages/rondines/PuntosPage';
 import ServiciosPage from './pages/rondines/ServiciosPage';
@@ -42,6 +43,7 @@ const PANELES = [
     { to: '/rondines', label: 'Dashboard', end: true },
     { to: '/rondines/mapa', label: 'Mapa en vivo' },
     { to: '/rondines/alertas', label: 'Alertas' },
+    { to: '/rondines/pizarron', label: 'Pizarrón / SDR' },
     { to: '/rondines/bitacora', label: 'Bitácora' },
     { to: '/rondines/puntos', label: 'Puntos QR' },
     { to: '/rondines/clientes', label: 'Clientes' },
@@ -184,6 +186,7 @@ function Layout() {
           <Route path="/rondines" element={<DashboardRondines />} />
           <Route path="/rondines/mapa" element={<MapaPage />} />
           <Route path="/rondines/alertas" element={<AlertasPage />} />
+          <Route path="/rondines/pizarron" element={<PizarronPage />} />
           <Route path="/rondines/bitacora" element={<BitacoraPage />} />
           <Route path="/rondines/puntos" element={<PuntosPage />} />
           <Route path="/rondines/clientes" element={<ServiciosPage />} />

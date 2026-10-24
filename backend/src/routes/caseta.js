@@ -78,6 +78,10 @@ function borrarSubida(req) {
 
 router.use(dispositivo);
 
+// Aviso vigente y dirigido al servicio $1
+const AVISO_VISIBLE = `a.activo AND (a.vigente_hasta IS NULL OR a.vigente_hasta > NOW())
+  AND (a.servicio_ids IS NULL OR $1 = ANY(a.servicio_ids))`;
+
 // GET /api/caseta/estado — servicio, guardias (asignados primero) y puntos de rondín
 router.get('/estado', async (req, res, next) => {
   try {
@@ -95,9 +99,16 @@ router.get('/estado', async (req, res, next) => {
       : { rows: [] };
     // empleados.foto guarda la ruta absoluta en disco (heredado de RHATA): exponer solo la URL pública
     for (const g of guardias) g.foto = g.foto ? `/uploads/${path.basename(g.foto)}` : null;
+    // Pizarrón: SDR primero (peligro antes que precaución), luego avisos; más recientes arriba
+    const { rows: avisos } = await pool.query(`
+      SELECT a.id, a.tipo, a.categoria, a.nivel, a.titulo, a.texto, a.zona, a.vigente_hasta, a.created_at,
+             (ac.aviso_id IS NOT NULL) AS enterado
+      FROM avisos a LEFT JOIN aviso_acuses ac ON ac.aviso_id = a.id AND ac.servicio_id = $1
+      WHERE ${AVISO_VISIBLE}
+      ORDER BY (a.tipo = 'sdr') DESC, (a.nivel = 'peligro') DESC, a.created_at DESC`, [s.id]);
     res.json({
       servicio: { id: s.id, nombre: s.nombre, tiene_rondines: s.tiene_rondines },
-      guardias, puntos,
+      guardias, puntos, avisos,
     });
   } catch (err) { next(err); }
 });
@@ -186,6 +197,20 @@ router.post('/sos', async (req, res, next) => {
        VALUES ($1, $2, 'sos', $3, $4, $5) RETURNING *`,
       [req.servicio.id, empleado_id || null, mensaje || 'Alerta SOS', lat || null, lng || null]);
     res.status(201).json({ alerta: a });
+  } catch (err) { next(err); }
+});
+
+// POST /api/caseta/avisos/:id/enterado { empleado_id? }
+router.post('/avisos/:id/enterado', async (req, res, next) => {
+  try {
+    const { rows: [a] } = await pool.query(`SELECT a.id FROM avisos a WHERE ${AVISO_VISIBLE} AND a.id = $2`,
+      [req.servicio.id, req.params.id]);
+    if (!a) return res.status(404).json({ error: 'El aviso ya no está vigente' });
+    await pool.query(
+      `INSERT INTO aviso_acuses (aviso_id, servicio_id, empleado_id) VALUES ($1, $2, $3)
+       ON CONFLICT (aviso_id, servicio_id) DO NOTHING`,
+      [a.id, req.servicio.id, req.body.empleado_id || null]);
+    res.json({ ok: true });
   } catch (err) { next(err); }
 });
 

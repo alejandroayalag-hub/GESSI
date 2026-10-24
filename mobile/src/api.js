@@ -39,6 +39,7 @@ export async function checar(tipo, { empleado_id, pin, foto, ubicacion }) {
 
 export const escanear = (datos) => api.post('/caseta/escaneo', datos).then(r => r.data);
 export const sos = (datos) => api.post('/caseta/sos', datos).then(r => r.data);
+export const enterado = (id, empleado_id) => api.post(`/caseta/avisos/${id}/enterado`, { empleado_id }).then(r => r.data);
 
 // GPS sin bloquear la checada: si tarda o falla, se manda sin ubicación
 export async function ubicacionActual() {

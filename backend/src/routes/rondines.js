@@ -107,6 +107,55 @@ router.put('/alertas/:id/resolver', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// ── Pizarrón: avisos y SDR (situaciones de riesgo) ───────────────────────────
+const CATEGORIAS_SDR = ['bloqueo', 'balacera', 'robo', 'manifestacion', 'otro'];
+
+// GET /api/rondines/avisos?tipo=sdr|aviso&todos=1 — vigentes (o todos) con sus acuses por caseta
+router.get('/avisos', async (req, res, next) => {
+  try {
+    const params = [];
+    let where = req.query.todos ? 'WHERE true' : 'WHERE a.activo AND (a.vigente_hasta IS NULL OR a.vigente_hasta > NOW())';
+    if (req.query.tipo) { params.push(req.query.tipo); where += ` AND a.tipo = $${params.length}`; }
+    const { rows } = await pool.query(`
+      SELECT a.*, u.nombre AS creado_por_nombre,
+             (a.activo AND (a.vigente_hasta IS NULL OR a.vigente_hasta > NOW())) AS vigente,
+             (SELECT COALESCE(json_agg(json_build_object('nombre', s.nombre, 'enterado_at', ac.created_at) ORDER BY s.nombre), '[]')
+              FROM servicios s
+              LEFT JOIN aviso_acuses ac ON ac.aviso_id = a.id AND ac.servicio_id = s.id
+              WHERE s.activo AND (a.servicio_ids IS NULL OR s.id = ANY(a.servicio_ids))) AS destinatarios
+      FROM avisos a LEFT JOIN usuarios u ON u.id = a.creado_por
+      ${where} ORDER BY a.created_at DESC LIMIT 200`, params);
+    res.json(rows);
+  } catch (err) { next(err); }
+});
+
+// POST /api/rondines/avisos { tipo, categoria, nivel, titulo, texto, zona, servicio_ids, horas }
+router.post('/avisos', requireRole('admin', 'rh'), async (req, res, next) => {
+  try {
+    const { tipo, categoria, nivel, titulo, texto, zona, servicio_ids, horas } = req.body;
+    if (!['aviso', 'sdr'].includes(tipo)) return res.status(400).json({ error: 'Tipo inválido' });
+    if (!String(titulo || '').trim()) return res.status(400).json({ error: 'El título es requerido' });
+    const esSdr = tipo === 'sdr';
+    if (esSdr && !CATEGORIAS_SDR.includes(categoria)) return res.status(400).json({ error: 'Categoría de riesgo inválida' });
+    if (esSdr && !['precaucion', 'peligro'].includes(nivel)) return res.status(400).json({ error: 'Nivel inválido' });
+    const ids = Array.isArray(servicio_ids) && servicio_ids.length ? servicio_ids.map(Number) : null;
+    const h = Number(horas) > 0 ? Number(horas) : null;
+    const { rows } = await pool.query(
+      `INSERT INTO avisos (tipo, categoria, nivel, titulo, texto, zona, servicio_ids, vigente_hasta, creado_por)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW() + make_interval(hours => $8::int), $9) RETURNING *`,
+      [tipo, esSdr ? categoria : null, esSdr ? nivel : null, titulo.trim(), texto || null, zona || null, ids, h, req.user.id]);
+    res.status(201).json(rows[0]);
+  } catch (err) { next(err); }
+});
+
+router.put('/avisos/:id/retirar', requireRole('admin', 'rh'), async (req, res, next) => {
+  try {
+    const { rows } = await pool.query('UPDATE avisos SET activo = false WHERE id = $1 RETURNING *', [req.params.id]);
+    if (!rows[0]) return res.status(404).json({ error: 'Aviso no encontrado' });
+    res.json(rows[0]);
+  } catch (err) { next(err); }
+});
+
 // ── Dashboard y mapa en vivo ─────────────────────────────────────────────────
 router.get('/resumen', async (req, res, next) => {
   try {
