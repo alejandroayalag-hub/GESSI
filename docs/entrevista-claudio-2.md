@@ -1,10 +1,19 @@
 # Segunda entrevista con Claudio (mar 27 / mié 28 oct 2026)
 
 ## Mostrar
-- Pizarrón: Avisos + SDR (situaciones de riesgo) con acuse "Enterado" por caseta. Panel → Rondines → Pizarrón / SDR.
+- Pizarrón: Avisos + SDR (situaciones de riesgo) con acuse "Enterado" por caseta. Panel → Rondines → Pizarrón / SDR. ✅ en producción 2026-10-24 (la app lo muestra a partir del APK 1.1.0).
 
 ## Cambios propuestos para la app (por confirmar con Claudio)
-- [ ] _(agregar aquí los cambios de Alejandro)_
+- [ ] **Entrada de turno nueva:** guardia elige su nombre → PIN → selfie de rostro → foto de cuerpo completo (para revisar el uniforme; la toma el guardia que sale) → escanea el QR de la caseta → queda registrada.
+    - Confirmar: ¿QR de caseta también al salir? ¿Qué pasa si no hay guardia saliente (primer turno, relevo tarde)?
+    - El QR de la caseta es uno por servicio, se imprime desde el panel (Clientes).
+- [ ] **Registro con valor probatorio:** constancia NOM-151 de un PSC acreditado por Economía para cada checada (o un lote por día). Cotizar con 2–3 PSC. Ver notas legales abajo.
+- [ ] **Biometría:** decidir si se guarda solo la foto como evidencia o una plantilla facial. La plantilla es dato sensible: requiere consentimiento expreso y por escrito + aviso de privacidad.
+
+## Notas legales (por validar por Alejandro)
+- Reforma LFT, DOF 1-may-2026: art. 132 fr. XXXIV, registro electrónico de jornada (hora de inicio y fin), entregarlo a la autoridad cuando lo pida. Multa del art. 994 fr. IV Bis: 250–5,000 UMA. Según las fuentes consultadas no exige biometría; revisar el decreto y los lineamientos de la STPS.
+- Integridad: hash SHA-256 del registro (guardia, servicio, hora del servidor, GPS, QR, hash de las fotos) → constancia de conservación NOM-151-SCFI-2016 del PSC. Prueba que el registro existía a esa hora y que no se alteró después. Además, una cadena de hashes interna para detectar registros borrados.
+- Identidad: PIN (firma electrónica simple) + selfie + QR físico de la caseta + GPS. No hace falta e.firma de cada guardia.
 
 ## Preguntas abiertas que ya teníamos
 - [ ] Banco con el que paga (para historial de pagos, fase 6)
