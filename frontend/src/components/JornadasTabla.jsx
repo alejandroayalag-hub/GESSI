@@ -29,6 +29,7 @@ function Corregir({ j, onClose, onGuardado }) {
       <form onSubmit={guardar} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           {j.entrada_foto && <img src={j.entrada_foto} alt="Selfie de entrada" className="rounded-lg w-full aspect-square object-cover" />}
+          {j.entrada_foto_cuerpo && <img src={j.entrada_foto_cuerpo} alt="Cuerpo completo al entrar" className="rounded-lg w-full object-contain max-h-96" />}
           {j.salida_foto && <img src={j.salida_foto} alt="Selfie de salida" className="rounded-lg w-full aspect-square object-cover" />}
         </div>
         <div><label className={label}>Entrada</label>

@@ -14,7 +14,7 @@ function valores(body) {
 router.get('/', async (req, res, next) => {
   try {
     const { rows } = await pool.query(`
-      SELECT s.id, ${CAMPOS.map(c => 's.' + c).join(', ')}, s.codigo_vinculacion,
+      SELECT s.id, ${CAMPOS.map(c => 's.' + c).join(', ')}, s.codigo_vinculacion, s.qr_caseta,
              s.dispositivo_vinculado_at, s.created_at,
              (SELECT COUNT(*)::int FROM empleados e WHERE e.servicio_id = s.id AND e.estado = 'activo') AS guardias,
              (SELECT COUNT(*)::int FROM jornadas j WHERE j.servicio_id = s.id AND j.salida_at IS NULL) AS en_turno

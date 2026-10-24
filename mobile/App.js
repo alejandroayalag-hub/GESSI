@@ -11,6 +11,7 @@ import CasetaScreen from './src/screens/CasetaScreen';
 import GuardiaScreen from './src/screens/GuardiaScreen';
 import SelfieScreen from './src/screens/SelfieScreen';
 import RondinScreen from './src/screens/RondinScreen';
+import ChecarScreen from './src/screens/ChecarScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ export default function App() {
         <Stack.Screen name="Caseta" component={CasetaScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Guardia" component={GuardiaScreen} options={{ title: '¿Quién eres?' }} />
         <Stack.Screen name="Selfie" component={SelfieScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Checar" component={ChecarScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Rondin" component={RondinScreen} options={{ title: 'Rondín' }} />
       </Stack.Navigator>
     </NavigationContainer>

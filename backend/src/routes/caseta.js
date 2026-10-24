@@ -73,7 +73,8 @@ async function validarGuardia(empleadoId, pin) {
 }
 
 function borrarSubida(req) {
-  if (req.file) fs.unlink(req.file.path, () => {});
+  const archivos = [req.file, ...Object.values(req.files || {}).flat()].filter(Boolean);
+  for (const f of archivos) fs.unlink(f.path, () => {});
 }
 
 router.use(dispositivo);
@@ -113,20 +114,35 @@ router.get('/estado', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// POST /api/caseta/entrada (multipart: foto, empleado_id, pin, lat, lng)
-router.post('/entrada', limitePin, selfies.single('foto'), async (req, res, next) => {
+const fotosEntrada = selfies.fields([{ name: 'foto', maxCount: 1 }, { name: 'foto_cuerpo', maxCount: 1 }]);
+const archivo = (req, campo) => req.files?.[campo]?.[0];
+
+// El guardia escanea el QR pegado en la caseta al entrar y al salir: prueba que estuvo ahí
+function qrCasetaInvalido(req) {
+  if (!req.body.qr_caseta) return 'Escanea el QR de la caseta';
+  if (req.body.qr_caseta !== req.servicio.qr_caseta) return 'Ese QR no es de esta caseta';
+  return null;
+}
+
+// POST /api/caseta/entrada (multipart: foto, foto_cuerpo, empleado_id, pin, qr_caseta, lat, lng)
+router.post('/entrada', limitePin, fotosEntrada, async (req, res, next) => {
   try {
     const { empleado_id, pin, lat, lng } = req.body;
-    if (!req.file) return res.status(400).json({ error: 'La selfie es obligatoria' });
+    if (!archivo(req, 'foto') || !archivo(req, 'foto_cuerpo')) {
+      borrarSubida(req); return res.status(400).json({ error: 'La selfie y la foto de cuerpo completo son obligatorias' });
+    }
+    const errorQr = qrCasetaInvalido(req);
+    if (errorQr) { borrarSubida(req); return res.status(400).json({ error: errorQr }); }
     const { empleado, error } = await validarGuardia(empleado_id, pin);
     if (error) { borrarSubida(req); return res.status(401).json({ error }); }
 
     const s = req.servicio;
     const zona = dentroDeRadio(lat, lng, s.latitud, s.longitud, s.radio_metros);
     const { rows: [j] } = await pool.query(
-      `INSERT INTO jornadas (empleado_id, servicio_id, entrada_lat, entrada_lng, entrada_foto, entrada_en_zona)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [empleado.id, s.id, lat || null, lng || null, `/uploads/jornadas/${req.file.filename}`, zona.dentro]);
+      `INSERT INTO jornadas (empleado_id, servicio_id, entrada_lat, entrada_lng, entrada_foto, entrada_foto_cuerpo, entrada_en_zona)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [empleado.id, s.id, lat || null, lng || null, `/uploads/jornadas/${archivo(req, 'foto').filename}`,
+        `/uploads/jornadas/${archivo(req, 'foto_cuerpo').filename}`, zona.dentro]);
     if (zona.dentro === false) {
       await pool.query(
         `INSERT INTO alertas (servicio_id, empleado_id, jornada_id, tipo, mensaje, latitud, longitud)
@@ -141,11 +157,13 @@ router.post('/entrada', limitePin, selfies.single('foto'), async (req, res, next
   }
 });
 
-// POST /api/caseta/salida (multipart: foto, empleado_id, pin, lat, lng)
+// POST /api/caseta/salida (multipart: foto, empleado_id, pin, qr_caseta, lat, lng)
 router.post('/salida', limitePin, selfies.single('foto'), async (req, res, next) => {
   try {
     const { empleado_id, pin, lat, lng } = req.body;
     if (!req.file) return res.status(400).json({ error: 'La selfie es obligatoria' });
+    const errorQr = qrCasetaInvalido(req);
+    if (errorQr) { borrarSubida(req); return res.status(400).json({ error: errorQr }); }
     const { empleado, error } = await validarGuardia(empleado_id, pin);
     if (error) { borrarSubida(req); return res.status(401).json({ error }); }
 

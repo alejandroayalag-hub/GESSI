@@ -27,10 +27,12 @@ export async function vincular(codigo) {
 export const estado = () => api.get('/caseta/estado').then(r => r.data);
 
 // tipo: 'entrada' | 'salida'
-export async function checar(tipo, { empleado_id, pin, foto, ubicacion }) {
+export async function checar(tipo, { empleado_id, pin, foto, fotoCuerpo, qr, ubicacion }) {
   const form = new FormData();
   form.append('empleado_id', String(empleado_id));
   form.append('pin', pin);
+  form.append('qr_caseta', qr);
+  if (fotoCuerpo) form.append('foto_cuerpo', { uri: fotoCuerpo, name: 'cuerpo.jpg', type: 'image/jpeg' });
   if (ubicacion) { form.append('lat', String(ubicacion.latitude)); form.append('lng', String(ubicacion.longitude)); }
   form.append('foto', { uri: foto, name: 'selfie.jpg', type: 'image/jpeg' });
   const { data } = await api.post(`/caseta/${tipo}`, form, { headers: { 'Content-Type': 'multipart/form-data' } });

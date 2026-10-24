@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { servicios as api, errorDe, fechaHora } from '../../api/operacion';
+import { QRCodeSVG } from 'qrcode.react';
 import Modal from '../../components/Modal';
 import { btn, btnSec, input, label, card, th, td, titulo, chip } from '../../components/ui';
 
@@ -115,10 +116,26 @@ function Vincular({ servicio, onClose, onCambio }) {
   );
 }
 
+// QR que se pega en la caseta: el guardia lo escanea al iniciar y al terminar jornada
+function QrCaseta({ servicio, onClose }) {
+  return (
+    <Modal titulo={`QR de caseta · ${servicio.nombre}`} onClose={onClose} ancho="max-w-sm">
+      <div id="qr-imprimir" className="flex flex-col items-center gap-3 text-center">
+        <p className="text-xs uppercase tracking-widest text-neutral-500">G.E.S.S.I. · Checada de caseta</p>
+        <QRCodeSVG value={servicio.qr_caseta} size={240} />
+        <p className="font-bold text-lg">{servicio.nombre}</p>
+        <p className="text-xs text-neutral-500">Escanear al iniciar y al terminar jornada</p>
+      </div>
+      <button className={`${btn} w-full mt-4 print:hidden`} onClick={() => window.print()}>Imprimir</button>
+    </Modal>
+  );
+}
+
 export default function ServiciosPage() {
   const [lista, setLista] = useState([]);
   const [editando, setEditando] = useState(null);
   const [vinculando, setVinculando] = useState(null);
+  const [qr, setQr] = useState(null);
   const cargar = () => api.listar().then(setLista);
   useEffect(() => { cargar(); }, []);
 
@@ -157,7 +174,12 @@ export default function ServiciosPage() {
                   </button>
                 </td>
                 <td className={td}>${Number(s.tarifa_mensual).toLocaleString('es-MX')}</td>
-                <td className={td}><button className={btnSec} onClick={() => setEditando(s)}>Editar</button></td>
+                <td className={td}>
+                  <div className="flex gap-2 justify-end">
+                    <button className={btnSec} onClick={() => setQr(s)}>QR caseta</button>
+                    <button className={btnSec} onClick={() => setEditando(s)}>Editar</button>
+                  </div>
+                </td>
               </tr>
             ))}
             {!lista.length && <tr><td className={td} colSpan="7">Aún no hay clientes. Agrega el primero.</td></tr>}
@@ -165,6 +187,7 @@ export default function ServiciosPage() {
         </table>
       </div>
       {editando && <FormServicio inicial={editando} onClose={() => setEditando(null)} onGuardado={() => { setEditando(null); cargar(); }} />}
+      {qr && <QrCaseta servicio={qr} onClose={() => setQr(null)} />}
       {vinculando && <Vincular servicio={vinculando} onClose={() => setVinculando(null)} onCambio={cargar} />}
     </div>
   );
