@@ -6,14 +6,12 @@
 ## Cambios propuestos para la app (por confirmar con Claudio)
 - [ ] **Entrada de turno nueva:** guardia elige su nombre → PIN → selfie de rostro → foto de cuerpo completo (para revisar el uniforme; la toma el guardia que sale) → escanea el QR de la caseta → queda registrada.
     - ✅ Decidido 2026-10-24: QR de caseta en ENTRADA y SALIDA (con GPS). Sin guardia saliente → el guardia toma su propia foto de cuerpo completo.
-    - ✅ Decidido: cada checada guarda hora, GPS y constancia NOM-151 de las fotos. Con eso se cumple el registro de jornada de la LFT (falta elegir PSC).
+    - ✅ Decidido: cada checada guarda hora, GPS, QR de caseta y fotos. Con eso se cumple el registro de jornada de la LFT.
     - El QR de la caseta es uno por servicio, se imprime desde el panel (Clientes).
-- [ ] **Registro con valor probatorio:** constancia NOM-151 de un PSC acreditado por Economía para cada checada (o un lote por día). Cotizar con 2–3 PSC. Ver notas legales abajo.
 - [ ] **Biometría:** decidir si se guarda solo la foto como evidencia o una plantilla facial. La plantilla es dato sensible: requiere consentimiento expreso y por escrito + aviso de privacidad.
 
 ## Notas legales (por validar por Alejandro)
 - Reforma LFT, DOF 1-may-2026: art. 132 fr. XXXIV, registro electrónico de jornada (hora de inicio y fin), entregarlo a la autoridad cuando lo pida. Multa del art. 994 fr. IV Bis: 250–5,000 UMA. Según las fuentes consultadas no exige biometría; revisar el decreto y los lineamientos de la STPS.
-- Integridad: hash SHA-256 del registro (guardia, servicio, hora del servidor, GPS, QR, hash de las fotos) → constancia de conservación NOM-151-SCFI-2016 del PSC. Prueba que el registro existía a esa hora y que no se alteró después. Además, una cadena de hashes interna para detectar registros borrados.
 - Identidad: PIN (firma electrónica simple) + selfie + QR físico de la caseta + GPS. No hace falta e.firma de cada guardia.
 
 ## Preguntas abiertas que ya teníamos
