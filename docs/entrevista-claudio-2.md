@@ -14,6 +14,9 @@
 - Reforma LFT, DOF 1-may-2026: art. 132 fr. XXXIV, registro electrónico de jornada (hora de inicio y fin), entregarlo a la autoridad cuando lo pida. Multa del art. 994 fr. IV Bis: 250–5,000 UMA. Según las fuentes consultadas no exige biometría; revisar el decreto y los lineamientos de la STPS.
 - Identidad: PIN (firma electrónica simple) + selfie + QR físico de la caseta + GPS. No hace falta e.firma de cada guardia.
 
+- [ ] **Bitácora e incidentes desde la app** (hecho en rama, sale con APK 1.1.0): notas del turno + incidente con tipo, descripción, fotos y GPS; la oficina lo ve en Alertas/mapa y lo resuelve. Solo la empresa recibe; reporte al cliente después si lo pide.
+- [ ] **Usuarios y roles** (hecho en rama `roles`): Administrador (Claudio, todo) · Asistente ×2 (Personal + Rondines, sin Finanzas) · Supervisor (solo Rondines, sin tarifas ni salarios; publica SDR, puntos QR, celulares). Confirmar: ¿asistentes sin Finanzas? ¿supervisor puede publicar SDR?
+
 ## Preguntas abiertas que ya teníamos
 - [ ] Banco con el que paga (para historial de pagos, fase 6)
 - [ ] Plantilla real de importación de NOMIPAQ
