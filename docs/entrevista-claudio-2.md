@@ -5,7 +5,8 @@
 
 ## Cambios propuestos para la app (por confirmar con Claudio)
 - [ ] **Entrada de turno nueva:** guardia elige su nombre → PIN → selfie de rostro → foto de cuerpo completo (para revisar el uniforme; la toma el guardia que sale) → escanea el QR de la caseta → queda registrada.
-    - Confirmar: ¿QR de caseta también al salir? ¿Qué pasa si no hay guardia saliente (primer turno, relevo tarde)?
+    - ✅ Decidido 2026-10-24: QR de caseta en ENTRADA y SALIDA (con GPS). Sin guardia saliente → el guardia toma su propia foto de cuerpo completo.
+    - ✅ Decidido: cada checada guarda hora, GPS y constancia NOM-151 de las fotos. Con eso se cumple el registro de jornada de la LFT (falta elegir PSC).
     - El QR de la caseta es uno por servicio, se imprime desde el panel (Clientes).
 - [ ] **Registro con valor probatorio:** constancia NOM-151 de un PSC acreditado por Economía para cada checada (o un lote por día). Cotizar con 2–3 PSC. Ver notas legales abajo.
 - [ ] **Biometría:** decidir si se guarda solo la foto como evidencia o una plantilla facial. La plantilla es dato sensible: requiere consentimiento expreso y por escrito + aviso de privacidad.
