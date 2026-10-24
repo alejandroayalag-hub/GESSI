@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { servicios as api, errorDe, fechaHora } from '../../api/operacion';
+import { servicios as api, errorDe, fechaHora, rolActual } from '../../api/operacion';
 import Modal from '../../components/Modal';
 import { btn, btnSec, input, label, card, th, td, titulo, chip } from '../../components/ui';
 
@@ -119,6 +119,7 @@ export default function ServiciosPage() {
   const [lista, setLista] = useState([]);
   const [editando, setEditando] = useState(null);
   const [vinculando, setVinculando] = useState(null);
+  const supervisor = rolActual() === 'supervisor'; // opera casetas, no edita clientes ni ve tarifas
   const cargar = () => api.listar().then(setLista);
   useEffect(() => { cargar(); }, []);
 
@@ -131,14 +132,14 @@ export default function ServiciosPage() {
         </div>
         <div className="flex gap-2">
           <a className={btnSec} href={APK} download>Descargar app caseta (APK)</a>
-          <button className={btn} onClick={() => setEditando(VACIO)}>+ Nuevo cliente</button>
+          {!supervisor && <button className={btn} onClick={() => setEditando(VACIO)}>+ Nuevo cliente</button>}
         </div>
       </div>
       <div className={`${card} overflow-x-auto`}>
         <table className="w-full">
           <thead><tr>
             <th className={th}>Servicio</th><th className={th}>Guardias</th><th className={th}>En turno</th>
-            <th className={th}>Rondines</th><th className={th}>Celular</th><th className={th}>Tarifa</th><th className={th}></th>
+            <th className={th}>Rondines</th><th className={th}>Celular</th>{!supervisor && <th className={th}>Tarifa</th>}<th className={th}></th>
           </tr></thead>
           <tbody>
             {lista.map(s => (
@@ -156,8 +157,8 @@ export default function ServiciosPage() {
                     {s.dispositivo_vinculado_at ? 'Vinculado' : s.codigo_vinculacion ? `Código ${s.codigo_vinculacion}` : 'Vincular'}
                   </button>
                 </td>
-                <td className={td}>${Number(s.tarifa_mensual).toLocaleString('es-MX')}</td>
-                <td className={td}><button className={btnSec} onClick={() => setEditando(s)}>Editar</button></td>
+                {!supervisor && <td className={td}>${Number(s.tarifa_mensual).toLocaleString('es-MX')}</td>}
+                <td className={td}>{!supervisor && <button className={btnSec} onClick={() => setEditando(s)}>Editar</button>}</td>
               </tr>
             ))}
             {!lista.length && <tr><td className={td} colSpan="7">Aún no hay clientes. Agrega el primero.</td></tr>}
