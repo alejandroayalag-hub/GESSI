@@ -23,6 +23,7 @@ export const rondines = {
   togglePunto: (id) => d(api.patch(`/rondines/puntos/${id}/toggle`)),
   eliminarPunto: (id) => d(api.delete(`/rondines/puntos/${id}`)),
   escaneos: (params) => d(api.get('/rondines/escaneos', { params })),
+  bitacora: (params) => d(api.get('/rondines/bitacora', { params })),
   alertas: (params) => d(api.get('/rondines/alertas', { params })),
   resolverAlerta: (id) => d(api.put(`/rondines/alertas/${id}/resolver`)),
   resumen: () => d(api.get('/rondines/resumen')),

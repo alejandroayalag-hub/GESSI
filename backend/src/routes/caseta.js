@@ -79,6 +79,9 @@ function borrarSubida(req) {
 
 router.use(dispositivo);
 
+const NOMBRE_EMP = "e.nombre || ' ' || e.apellido_paterno";
+const CATEGORIAS_INCIDENTE = ['robo', 'dano', 'sospechoso', 'accidente', 'otro'];
+
 // Aviso vigente y dirigido al servicio $1
 const AVISO_VISIBLE = `a.activo AND (a.vigente_hasta IS NULL OR a.vigente_hasta > NOW())
   AND (a.servicio_ids IS NULL OR $1 = ANY(a.servicio_ids))`;
@@ -107,9 +110,15 @@ router.get('/estado', async (req, res, next) => {
       FROM avisos a LEFT JOIN aviso_acuses ac ON ac.aviso_id = a.id AND ac.servicio_id = $1
       WHERE ${AVISO_VISIBLE}
       ORDER BY (a.tipo = 'sdr') DESC, (a.nivel = 'peligro') DESC, a.created_at DESC`, [s.id]);
+    // Novedades de las últimas 24 h para el relevo
+    const { rows: bitacora } = await pool.query(`
+      SELECT b.id, b.texto, b.created_at, ${NOMBRE_EMP} AS guardia_nombre
+      FROM bitacora_caseta b LEFT JOIN empleados e ON e.id = b.empleado_id
+      WHERE b.servicio_id = $1 AND b.created_at > NOW() - INTERVAL '24 hours'
+      ORDER BY b.created_at DESC LIMIT 10`, [s.id]);
     res.json({
       servicio: { id: s.id, nombre: s.nombre, tiene_rondines: s.tiene_rondines },
-      guardias, puntos, avisos,
+      guardias, puntos, avisos, bitacora,
     });
   } catch (err) { next(err); }
 });
@@ -230,6 +239,34 @@ router.post('/avisos/:id/enterado', async (req, res, next) => {
       [a.id, req.servicio.id, req.body.empleado_id || null]);
     res.json({ ok: true });
   } catch (err) { next(err); }
+});
+
+// POST /api/caseta/bitacora { empleado_id?, texto } — nota del turno
+router.post('/bitacora', async (req, res, next) => {
+  try {
+    const texto = String(req.body.texto || '').trim();
+    if (!texto) return res.status(400).json({ error: 'Escribe la nota' });
+    const { rows: [b] } = await pool.query(
+      'INSERT INTO bitacora_caseta (servicio_id, empleado_id, texto) VALUES ($1, $2, $3) RETURNING *',
+      [req.servicio.id, req.body.empleado_id || null, texto.slice(0, 2000)]);
+    res.status(201).json(b);
+  } catch (err) { next(err); }
+});
+
+// POST /api/caseta/incidente (multipart: fotos[0..3], empleado_id?, categoria, descripcion, lat, lng)
+// Queda como alerta 'incidente' para que la oficina le dé seguimiento.
+router.post('/incidente', selfies.array('fotos', 3), async (req, res, next) => {
+  try {
+    const { empleado_id, categoria, descripcion, lat, lng } = req.body;
+    if (!CATEGORIAS_INCIDENTE.includes(categoria)) { borrarSubida(req); return res.status(400).json({ error: 'Elige el tipo de incidente' }); }
+    if (!String(descripcion || '').trim()) { borrarSubida(req); return res.status(400).json({ error: 'Describe qué pasó' }); }
+    const fotos = (req.files || []).map(f => `/uploads/jornadas/${f.filename}`);
+    const { rows: [a] } = await pool.query(
+      `INSERT INTO alertas (servicio_id, empleado_id, tipo, categoria, mensaje, fotos, latitud, longitud)
+       VALUES ($1, $2, 'incidente', $3, $4, $5, $6, $7) RETURNING *`,
+      [req.servicio.id, empleado_id || null, categoria, descripcion.trim().slice(0, 2000), fotos.length ? fotos : null, lat || null, lng || null]);
+    res.status(201).json({ alerta: a });
+  } catch (err) { borrarSubida(req); next(err); }
 });
 
 module.exports = router;

@@ -12,6 +12,7 @@ import GuardiaScreen from './src/screens/GuardiaScreen';
 import SelfieScreen from './src/screens/SelfieScreen';
 import RondinScreen from './src/screens/RondinScreen';
 import ChecarScreen from './src/screens/ChecarScreen';
+import NovedadScreen from './src/screens/NovedadScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ export default function App() {
         <Stack.Screen name="Guardia" component={GuardiaScreen} options={{ title: '¿Quién eres?' }} />
         <Stack.Screen name="Selfie" component={SelfieScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Checar" component={ChecarScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Novedad" component={NovedadScreen} options={({ route }) => ({ title: route.params.tipo === 'incidente' ? 'Reportar incidente' : 'Bitácora' })} />
         <Stack.Screen name="Rondin" component={RondinScreen} options={{ title: 'Rondín' }} />
       </Stack.Navigator>
     </NavigationContainer>

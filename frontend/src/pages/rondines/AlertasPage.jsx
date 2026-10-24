@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { rondines, fechaHora } from '../../api/operacion';
 import { btnSec, card, th, td, titulo, chip } from '../../components/ui';
 
-const TIPOS = { sos: 'SOS', no_escaneo: 'Sin rondín', fuera_de_rango: 'Fuera de rango', fuera_de_zona: 'Checada fuera de zona' };
+const TIPOS = { sos: 'SOS', incidente: 'Incidente', no_escaneo: 'Sin rondín', fuera_de_rango: 'Fuera de rango', fuera_de_zona: 'Checada fuera de zona' };
+const CATEGORIAS = { robo: 'Robo / asalto', dano: 'Daño a instalaciones', sospechoso: 'Persona o vehículo sospechoso', accidente: 'Accidente / lesionado', otro: 'Otro' };
 
 export default function AlertasPage() {
   const [lista, setLista] = useState([]);
@@ -28,10 +29,18 @@ export default function AlertasPage() {
           <tbody>
             {lista.map(a => (
               <tr key={a.id} className={a.resuelta ? 'opacity-50' : ''}>
-                <td className={td}><span className={chip(a.tipo === 'sos' && !a.resuelta)}>{TIPOS[a.tipo]}</span></td>
+                <td className={td}>
+                  <span className={chip(['sos', 'incidente'].includes(a.tipo) && !a.resuelta)}>{TIPOS[a.tipo]}</span>
+                  {a.categoria && <div className="text-xs text-neutral-500 mt-1">{CATEGORIAS[a.categoria]}</div>}
+                </td>
                 <td className={td}>{a.servicio_nombre}<div className="text-xs text-neutral-500">{a.guardia_nombre}</div></td>
                 <td className={td}>
-                  {a.mensaje}
+                  <span className="whitespace-pre-line">{a.mensaje}</span>
+                  {a.fotos?.length > 0 && (
+                    <div className="flex gap-2 mt-2">
+                      {a.fotos.map(f => <a key={f} href={f} target="_blank" rel="noreferrer"><img src={f} alt="Foto del incidente" className="w-16 h-16 object-cover rounded" /></a>)}
+                    </div>
+                  )}
                   {a.latitud && <a className="block text-xs underline" target="_blank" rel="noreferrer"
                     href={`https://www.google.com/maps?q=${a.latitud},${a.longitud}`}>Ver ubicación</a>}
                 </td>

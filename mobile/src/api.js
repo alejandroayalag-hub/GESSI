@@ -41,6 +41,19 @@ export async function checar(tipo, { empleado_id, pin, foto, fotoCuerpo, qr, ubi
 
 export const escanear = (datos) => api.post('/caseta/escaneo', datos).then(r => r.data);
 export const sos = (datos) => api.post('/caseta/sos', datos).then(r => r.data);
+export const notaBitacora = (datos) => api.post('/caseta/bitacora', datos).then(r => r.data);
+
+export async function reportarIncidente({ empleado_id, categoria, descripcion, fotos, ubicacion }) {
+  const form = new FormData();
+  if (empleado_id) form.append('empleado_id', String(empleado_id));
+  form.append('categoria', categoria);
+  form.append('descripcion', descripcion);
+  if (ubicacion) { form.append('lat', String(ubicacion.latitude)); form.append('lng', String(ubicacion.longitude)); }
+  fotos.forEach((uri, i) => form.append('fotos', { uri, name: `incidente${i}.jpg`, type: 'image/jpeg' }));
+  const { data } = await api.post('/caseta/incidente', form, { headers: { 'Content-Type': 'multipart/form-data' } });
+  return data;
+}
+
 export const enterado = (id, empleado_id) => api.post(`/caseta/avisos/${id}/enterado`, { empleado_id }).then(r => r.data);
 
 // GPS sin bloquear la checada: si tarda o falla, se manda sin ubicación

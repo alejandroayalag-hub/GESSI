@@ -112,6 +112,15 @@ export default function CasetaScreen({ navigation }) {
           </TouchableOpacity>
         )}
 
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity style={[s.botonSec, { flex: 1 }]} onPress={() => navigation.navigate('Novedad', { tipo: 'bitacora', enTurno })} disabled={!datos}>
+            <Text style={s.botonSecTexto}>BITÁCORA</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[s.botonSec, { flex: 1 }]} onPress={() => navigation.navigate('Novedad', { tipo: 'incidente', enTurno })} disabled={!datos}>
+            <Text style={s.botonSecTexto}>INCIDENTE</Text>
+          </TouchableOpacity>
+        </View>
+
         {avisos.filter(a => a.tipo === 'aviso').map(a => <Aviso key={a.id} a={a} onEnterado={marcarEnterado} />)}
 
         <View style={s.tarjeta}>
@@ -121,6 +130,17 @@ export default function CasetaScreen({ navigation }) {
             <Text key={g.id} style={{ marginTop: 8, fontSize: 17, fontWeight: '600' }}>{nombre(g)} · desde {hora(g.entrada_at)}</Text>
           ))}
         </View>
+
+        {(datos?.bitacora || []).length > 0 && (
+          <View style={s.tarjeta}>
+            <Text style={{ fontSize: 13, fontWeight: '700', color: C.gris, letterSpacing: 1 }}>BITÁCORA · ÚLTIMAS 24 H</Text>
+            {datos.bitacora.map(b => (
+              <Text key={b.id} style={{ marginTop: 8, fontSize: 15 }}>
+                <Text style={{ fontWeight: '700' }}>{hora(b.created_at)}</Text>{b.guardia_nombre ? ` · ${b.guardia_nombre}` : ''} — {b.texto}
+              </Text>
+            ))}
+          </View>
+        )}
 
         <TouchableOpacity onLongPress={enviarSOS} delayLongPress={1500}
           style={{ marginTop: 12, borderRadius: 100, borderWidth: 4, borderColor: C.negro, paddingVertical: 22, alignItems: 'center', backgroundColor: C.blanco }}>

@@ -80,6 +80,25 @@ router.get('/escaneos', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// GET /api/rondines/bitacora?desde&hasta&servicio_id — notas de turno desde la app de caseta
+router.get('/bitacora', async (req, res, next) => {
+  try {
+    const { desde, hasta, servicio_id } = req.query;
+    const cond = [], params = [];
+    if (desde) { params.push(desde); cond.push(`b.created_at >= $${params.length}::date`); }
+    if (hasta) { params.push(hasta); cond.push(`b.created_at < $${params.length}::date + 1`); }
+    if (servicio_id) { params.push(servicio_id); cond.push(`b.servicio_id = $${params.length}`); }
+    const { rows } = await pool.query(`
+      SELECT b.*, s.nombre AS servicio_nombre, ${NOMBRE_EMP} AS guardia_nombre
+      FROM bitacora_caseta b
+      JOIN servicios s ON s.id = b.servicio_id
+      LEFT JOIN empleados e ON e.id = b.empleado_id
+      ${cond.length ? 'WHERE ' + cond.join(' AND ') : ''}
+      ORDER BY b.created_at DESC LIMIT 1000`, params);
+    res.json(rows);
+  } catch (err) { next(err); }
+});
+
 // ── Alertas ─────────────────────────────────────────────────────────────────
 router.get('/alertas', async (req, res, next) => {
   try {
