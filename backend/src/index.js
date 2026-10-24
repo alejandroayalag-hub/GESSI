@@ -32,18 +32,19 @@ app.use('/api/auth', loginLimiter, require('./routes/auth'));
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 
 // Rutas protegidas
-app.use('/api/empleados', authMiddleware, require('./routes/empleados'));
-app.use('/api/documentos', authMiddleware, require('./routes/documentos'));
-app.use('/api/contratos', authMiddleware, require('./routes/contratos'));
-app.use('/api/pagos',     authMiddleware, require('./routes/pagos'));
-app.use('/api/formatos',  authMiddleware, require('./routes/formatos'));
-app.use('/api/salidas', authMiddleware, require('./routes/salidas'));
-app.use('/api/documentosSalida', authMiddleware, require('./routes/documentosSalida'));
-app.use('/api/culturas', authMiddleware, require('./routes/culturas'));
+app.use('/api/empleados', authMiddleware, requireRole('admin', 'rh'), require('./routes/empleados'));
+app.use('/api/documentos', authMiddleware, requireRole('admin', 'rh'), require('./routes/documentos'));
+app.use('/api/contratos', authMiddleware, requireRole('admin', 'rh'), require('./routes/contratos'));
+app.use('/api/pagos',     authMiddleware, requireRole('admin', 'rh'), require('./routes/pagos'));
+app.use('/api/formatos',  authMiddleware, requireRole('admin', 'rh'), require('./routes/formatos'));
+app.use('/api/salidas', authMiddleware, requireRole('admin', 'rh'), require('./routes/salidas'));
+app.use('/api/documentosSalida', authMiddleware, requireRole('admin', 'rh'), require('./routes/documentosSalida'));
+app.use('/api/culturas', authMiddleware, requireRole('admin', 'rh'), require('./routes/culturas'));
 app.use('/api/servicios', authMiddleware, require('./routes/servicios'));
 app.use('/api/guardias',  authMiddleware, require('./routes/guardias'));
 app.use('/api/rondines',  authMiddleware, require('./routes/rondines'));
-app.use('/api/jornadas',  authMiddleware, require('./routes/jornadas'));
+app.use('/api/jornadas',  authMiddleware, requireRole('admin', 'rh'), require('./routes/jornadas'));
+app.use('/api/usuarios',  authMiddleware, requireRole('admin'), require('./routes/usuarios'));
 app.use('/api/finanzas',  authMiddleware, requireRole('admin'), require('./routes/finanzas'));
 
 // Celular de caseta: su propio token de dispositivo (ver routes/caseta.js)

@@ -8,9 +8,9 @@ router.post('/login', async (req, res, next) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email y contraseña requeridos' });
 
-    const { rows } = await pool.query('SELECT * FROM usuarios WHERE email = $1', [email]);
+    const { rows } = await pool.query('SELECT * FROM usuarios WHERE lower(email) = lower($1)', [email]);
     const user = rows[0];
-    if (!user) return res.status(401).json({ error: 'Credenciales incorrectas' });
+    if (!user || !user.activo) return res.status(401).json({ error: 'Credenciales incorrectas' });
 
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(401).json({ error: 'Credenciales incorrectas' });
@@ -20,7 +20,7 @@ router.post('/login', async (req, res, next) => {
       process.env.JWT_SECRET,
       { expiresIn: '8h' }
     );
-    res.json({ token, nombre: user.nombre });
+    res.json({ token, nombre: user.nombre, role: user.role });
   } catch (err) {
     next(err);
   }

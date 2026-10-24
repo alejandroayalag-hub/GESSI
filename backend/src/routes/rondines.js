@@ -18,7 +18,7 @@ router.get('/puntos', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.post('/puntos', requireRole('admin', 'rh'), async (req, res, next) => {
+router.post('/puntos', requireRole('admin', 'rh', 'supervisor'), async (req, res, next) => {
   try {
     const { servicio_id, nombre, descripcion, latitud, longitud, radio_tolerancia_metros, orden } = req.body;
     if (!servicio_id || !nombre) return res.status(400).json({ error: 'Servicio y nombre son requeridos' });
@@ -31,7 +31,7 @@ router.post('/puntos', requireRole('admin', 'rh'), async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.put('/puntos/:id', requireRole('admin', 'rh'), async (req, res, next) => {
+router.put('/puntos/:id', requireRole('admin', 'rh', 'supervisor'), async (req, res, next) => {
   try {
     const { servicio_id, nombre, descripcion, latitud, longitud, radio_tolerancia_metros, orden } = req.body;
     if (!servicio_id || !nombre) return res.status(400).json({ error: 'Servicio y nombre son requeridos' });
@@ -44,7 +44,7 @@ router.put('/puntos/:id', requireRole('admin', 'rh'), async (req, res, next) => 
   } catch (err) { next(err); }
 });
 
-router.patch('/puntos/:id/toggle', requireRole('admin', 'rh'), async (req, res, next) => {
+router.patch('/puntos/:id/toggle', requireRole('admin', 'rh', 'supervisor'), async (req, res, next) => {
   try {
     const { rows } = await pool.query('UPDATE puntos_rondin SET activo = NOT activo WHERE id=$1 RETURNING id, activo', [req.params.id]);
     if (!rows[0]) return res.status(404).json({ error: 'Punto no encontrado' });
@@ -149,7 +149,7 @@ router.get('/avisos', async (req, res, next) => {
 });
 
 // POST /api/rondines/avisos { tipo, categoria, nivel, titulo, texto, zona, servicio_ids, horas }
-router.post('/avisos', requireRole('admin', 'rh'), async (req, res, next) => {
+router.post('/avisos', requireRole('admin', 'rh', 'supervisor'), async (req, res, next) => {
   try {
     const { tipo, categoria, nivel, titulo, texto, zona, servicio_ids, horas } = req.body;
     if (!['aviso', 'sdr'].includes(tipo)) return res.status(400).json({ error: 'Tipo inválido' });
@@ -167,7 +167,7 @@ router.post('/avisos', requireRole('admin', 'rh'), async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.put('/avisos/:id/retirar', requireRole('admin', 'rh'), async (req, res, next) => {
+router.put('/avisos/:id/retirar', requireRole('admin', 'rh', 'supervisor'), async (req, res, next) => {
   try {
     const { rows } = await pool.query('UPDATE avisos SET activo = false WHERE id = $1 RETURNING *', [req.params.id]);
     if (!rows[0]) return res.status(404).json({ error: 'Aviso no encontrado' });

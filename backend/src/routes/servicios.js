@@ -19,6 +19,8 @@ router.get('/', async (req, res, next) => {
              (SELECT COUNT(*)::int FROM empleados e WHERE e.servicio_id = s.id AND e.estado = 'activo') AS guardias,
              (SELECT COUNT(*)::int FROM jornadas j WHERE j.servicio_id = s.id AND j.salida_at IS NULL) AS en_turno
       FROM servicios s ORDER BY s.activo DESC, s.nombre`);
+    // El supervisor solo ve operación, no dinero
+    if (req.user.role === 'supervisor') for (const r of rows) delete r.tarifa_mensual;
     res.json(rows);
   } catch (err) { next(err); }
 });
@@ -49,7 +51,7 @@ router.put('/:id', requireRole('admin', 'rh'), async (req, res, next) => {
 
 // POST /api/servicios/:id/vincular — genera código de 6 dígitos para el celular de caseta.
 // Invalida el celular anterior (dispositivo_version++).
-router.post('/:id/vincular', requireRole('admin', 'rh'), async (req, res, next) => {
+router.post('/:id/vincular', requireRole('admin', 'rh', 'supervisor'), async (req, res, next) => {
   try {
     const codigo = String(crypto.randomInt(0, 1e6)).padStart(6, '0');
     const { rows } = await pool.query(
@@ -62,7 +64,7 @@ router.post('/:id/vincular', requireRole('admin', 'rh'), async (req, res, next) 
 });
 
 // POST /api/servicios/:id/desvincular — el celular actual deja de funcionar
-router.post('/:id/desvincular', requireRole('admin', 'rh'), async (req, res, next) => {
+router.post('/:id/desvincular', requireRole('admin', 'rh', 'supervisor'), async (req, res, next) => {
   try {
     await pool.query(
       `UPDATE servicios SET codigo_vinculacion = NULL, dispositivo_version = dispositivo_version + 1,
