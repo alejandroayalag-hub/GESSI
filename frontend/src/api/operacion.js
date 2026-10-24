@@ -58,4 +58,14 @@ export function semanaActual() {
 export const fechaHora = (v) => v ? new Date(v).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : '—';
 export const hora = (v) => v ? new Date(v).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : '—';
 export const nombreGuardia = (g) => [g.nombre, g.apellido_paterno, g.apellido_materno].filter(Boolean).join(' ');
+// Rol del usuario en sesión: admin | rh (Asistente) | supervisor
+export function rolActual() {
+  try { return JSON.parse(atob(localStorage.getItem('token').split('.')[1])).role; } catch { return null; }
+}
+export const ROLES = { admin: 'Administrador', rh: 'Asistente', supervisor: 'Supervisor' };
+export const usuarios = {
+  listar: () => d(api.get('/usuarios')),
+  crear: (data) => d(api.post('/usuarios', data)),
+  actualizar: (id, data) => d(api.put(`/usuarios/${id}`, data)),
+};
 export const errorDe = (e) => e.response?.data?.error || 'Ocurrió un error';

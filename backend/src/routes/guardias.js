@@ -16,6 +16,8 @@ router.get('/', async (req, res, next) => {
       LEFT JOIN jornadas j ON j.empleado_id = e.id AND j.salida_at IS NULL
       WHERE e.estado = 'activo'
       ORDER BY s.nombre NULLS LAST, e.apellido_paterno, e.nombre`);
+    // El supervisor solo ve operación, no dinero
+    if (req.user.role === 'supervisor') for (const r of rows) delete r.salario_diario;
     res.json(rows);
   } catch (err) { next(err); }
 });

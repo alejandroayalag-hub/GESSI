@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { guardias as api, servicios, errorDe, hora, nombreGuardia } from '../../api/operacion';
+import { guardias as api, servicios, errorDe, hora, nombreGuardia, rolActual } from '../../api/operacion';
 import Modal from '../../components/Modal';
 import { btn, btnSec, input, label, card, th, td, titulo, chip } from '../../components/ui';
 
@@ -75,7 +75,7 @@ export default function GuardiasPage() {
                 <td className={td}>{g.numero_empleado || '—'}</td>
                 <td className={td}>{g.tiene_pin ? <span className={chip(false)}>Asignado</span> : <span className={chip(true)}>Falta</span>}</td>
                 <td className={td}>{g.jornada_id ? `En turno desde ${hora(g.entrada_at)}` : 'Fuera de turno'}</td>
-                <td className={td}><button className={btnSec} onClick={() => setEditando(g)}>Configurar</button></td>
+                <td className={td}>{rolActual() !== 'supervisor' && <button className={btnSec} onClick={() => setEditando(g)}>Configurar</button>}</td>
               </tr>
             ))}
             {!lista.length && <tr><td className={td} colSpan="6">No hay empleados activos. Dalos de alta en Personal.</td></tr>}

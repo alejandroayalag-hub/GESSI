@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import logoGessi from './assets/logo-gessi.png';
 import EmpleadosPage from './pages/EmpleadosPage';
 import EmpleadoDetallePage from './pages/EmpleadoDetallePage';
@@ -25,13 +25,14 @@ import MovimientosPage from './pages/finanzas/MovimientosPage';
 import CuentasPage from './pages/finanzas/CuentasPage';
 import GananciaPage from './pages/finanzas/GananciaPage';
 import CategoriasPage from './pages/finanzas/CategoriasPage';
-import { rondines } from './api/operacion';
+import { rondines, rolActual } from './api/operacion';
+import UsuariosPage from './pages/UsuariosPage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Personal conserva las rutas heredadas de RHATA (/empleados, /pagos…); la raíz es el escritorio
 const PANELES = [
-  { id: 'personal', label: 'Personal', to: '/personal', desc: 'Expedientes, asistencia, pre-nómina y formatos', links: [
+  { id: 'personal', label: 'Personal', to: '/personal', roles: ['admin', 'rh'], desc: 'Expedientes, asistencia, pre-nómina y formatos', links: [
     { to: '/personal', label: 'Empleados', end: true },
     { to: '/asistencia', label: 'Asistencia' },
     { to: '/prenomina', label: 'Pre-nómina' },
@@ -39,7 +40,7 @@ const PANELES = [
     { to: '/formatos', label: 'Formatos' },
     { to: '/cultura', label: 'Cultura' },
   ] },
-  { id: 'rondines', label: 'Rondines', to: '/rondines', desc: 'Mapa en vivo, alertas, puntos QR y clientes', lateral: true, links: [
+  { id: 'rondines', label: 'Rondines', to: '/rondines', roles: ['admin', 'rh', 'supervisor'], desc: 'Mapa en vivo, alertas, puntos QR y clientes', lateral: true, links: [
     { to: '/rondines', label: 'Dashboard', end: true },
     { to: '/rondines/mapa', label: 'Mapa en vivo' },
     { to: '/rondines/alertas', label: 'Alertas' },
@@ -49,7 +50,7 @@ const PANELES = [
     { to: '/rondines/clientes', label: 'Clientes' },
     { to: '/rondines/guardias', label: 'Guardias' },
   ] },
-  { id: 'finanzas', label: 'Finanzas', to: '/finanzas', desc: 'Ingresos, egresos, cobranza y ganancia por servicio', soloAdmin: true, links: [
+  { id: 'finanzas', label: 'Finanzas', to: '/finanzas', desc: 'Ingresos, egresos, cobranza y ganancia por servicio', roles: ['admin'], links: [
     { to: '/finanzas', label: 'Dashboard', end: true },
     { to: '/finanzas/resultados', label: 'Estado de resultados' },
     { to: '/finanzas/movimientos', label: 'Movimientos' },
@@ -60,12 +61,8 @@ const PANELES = [
   ] },
 ];
 
-function rolActual() {
-  try { return JSON.parse(atob(localStorage.getItem('token').split('.')[1])).role; } catch { return null; }
-}
-
 function panelActual(pathname) {
-  if (pathname === '/') return null;
+  if (pathname === '/' || pathname.startsWith('/usuarios')) return null;
   return PANELES.find(p => p.id !== 'personal' && pathname.startsWith(p.to)) || PANELES[0];
 }
 
@@ -76,16 +73,19 @@ const ICONOS = {
   finanzas: <><line x1="12" x2="12" y1="2" y2="22" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></>,
 };
 
-const panelesVisibles = () => PANELES.filter(p => !p.soloAdmin || rolActual() === 'admin');
+const permitido = (p) => p.roles.includes(rolActual());
+const panelesVisibles = () => PANELES.filter(permitido);
 
 function Escritorio() {
   const navigate = useNavigate();
+  const visibles = panelesVisibles();
+  if (visibles.length === 1) return <Navigate to={visibles[0].to} replace />;
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center py-8">
       <img src={logoGessi} alt="G.E.S.S.I. Seguridad Privada" className="h-24 object-contain mb-4 bg-black rounded-2xl p-3" />
       <p className="text-sm text-gray-500 mb-10">Selecciona un módulo para continuar</p>
       <div className="grid gap-5 w-full max-w-4xl grid-cols-1 sm:grid-cols-3">
-        {panelesVisibles().map(p => (
+        {visibles.map(p => (
           <button key={p.id} onClick={() => navigate(p.to)}
             className="bg-white border border-gray-200 rounded-2xl p-8 text-center shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl hover:border-black active:scale-95">
             <div className="w-14 h-14 rounded-2xl mx-auto mb-4 bg-black text-white flex items-center justify-center">
@@ -145,6 +145,9 @@ function Layout() {
               </button>
             ))}
           </nav>
+          {rolActual() === 'admin' && (
+            <button onClick={() => navigate('/usuarios')} className="text-sm text-gray-300 hover:text-white">Usuarios</button>
+          )}
           <span className="text-sm text-gray-300">{nombre}</span>
           <button onClick={logout} className="text-xs text-white border border-white/40 rounded px-2 py-1 hover:bg-white hover:text-black">
             Cerrar sesión
@@ -170,6 +173,8 @@ function Layout() {
         </aside>
       )}
       <main className="flex-1 min-w-0 max-w-6xl mx-auto p-6">
+        {/* Rol sin acceso a este panel (o a Usuarios) → escritorio; el backend también lo bloquea */}
+        {((panel && !permitido(panel)) || (pathname.startsWith('/usuarios') && rolActual() !== 'admin')) ? <Navigate to="/" replace /> : (
         <Routes>
           <Route path="/" element={<Escritorio />} />
           <Route path="/personal" element={<EmpleadosPage />} />
@@ -198,7 +203,9 @@ function Layout() {
           <Route path="/finanzas/pagar" element={<CuentasPage key="cxp" tipo="cxp" />} />
           <Route path="/finanzas/ganancia" element={<GananciaPage />} />
           <Route path="/finanzas/categorias" element={<CategoriasPage />} />
+          <Route path="/usuarios" element={<UsuariosPage />} />
         </Routes>
+        )}
       </main>
       </div>
     </div>
