@@ -21,16 +21,43 @@ function pitar() {
   } catch { /* navegador sin audio */ }
 }
 
+// Notificación del sistema (Windows) para ver la alerta aunque el navegador esté minimizado.
+// ponytail: el navegador solo la permite en HTTPS/localhost; en http://IP no sale (queda el modal).
+function notificar(a, alAbrir) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const n = new Notification(a.tipo === 'sos' ? '⚠ SOS — GESSI' : '⚠ INCIDENTE — GESSI', {
+    body: [a.servicio_nombre, a.guardia_nombre, a.mensaje].filter(Boolean).join('\n'),
+    tag: `alerta-${a.id}`, requireInteraction: true,
+  });
+  n.onclick = () => { window.focus(); alAbrir(); n.close(); };
+}
+
 // Alerta SOS / incidente a pantalla completa desde cualquier panel. "Enterado" la oculta
 // en esta sesión; sigue pendiente en Alertas hasta que alguien la resuelva.
 export default function AlertaSOS() {
   const navigate = useNavigate();
   const [pendientes, setPendientes] = useState([]);
   const vistas = useRef(new Set());
+  const notificadas = useRef(new Set());
+
+  // El permiso se pide con el primer clic (los navegadores lo exigen tras una interacción)
+  useEffect(() => {
+    if (!('Notification' in window) || Notification.permission !== 'default') return;
+    const pedir = () => Notification.requestPermission().catch(() => {});
+    document.addEventListener('click', pedir, { once: true });
+    return () => document.removeEventListener('click', pedir);
+  }, []);
 
   useEffect(() => {
     const revisar = () => rondines.alertas({ resuelta: false })
-      .then(l => setPendientes(l.filter(a => URGENTES.includes(a.tipo) && !vistas.current.has(a.id))))
+      .then(l => {
+        const urgentes = l.filter(a => URGENTES.includes(a.tipo));
+        urgentes.filter(a => !notificadas.current.has(a.id)).forEach(a => {
+          notificadas.current.add(a.id);
+          notificar(a, () => navigate('/rondines/alertas'));
+        });
+        setPendientes(urgentes.filter(a => !vistas.current.has(a.id)));
+      })
       .catch(() => {});
     revisar();
     const t = setInterval(revisar, 10000);
