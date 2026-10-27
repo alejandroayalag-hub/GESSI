@@ -27,6 +27,7 @@ import GananciaPage from './pages/finanzas/GananciaPage';
 import CategoriasPage from './pages/finanzas/CategoriasPage';
 import { rondines, rolActual } from './api/operacion';
 import UsuariosPage from './pages/UsuariosPage';
+import AlertaSOS from './components/AlertaSOS';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -131,6 +132,7 @@ function Layout() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <AlertaSOS />
       <header className="bg-black text-white">
         <div className="px-6 flex items-center gap-6 h-16">
           <button onClick={() => navigate('/')} title="Escritorio">
