@@ -98,3 +98,7 @@ body {
   #qr-imprimir { position: fixed; inset: 0; justify-content: center; }
 }
 
+
+/* Fondo de alerta SOS: parpadeo negro/blanco (marca sin rojo) */
+@keyframes sos-flash { 0%, 49% { background: rgba(0,0,0,.92); } 50%, 100% { background: rgba(255,255,255,.92); } }
+.sos-flash { animation: sos-flash .8s infinite; }
